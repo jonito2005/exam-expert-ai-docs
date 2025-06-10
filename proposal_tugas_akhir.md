@@ -97,16 +97,112 @@ Penelitian ini dibatasi pada:
    - Pengajar (dengan verifikasi dokumen)
    - Pelajar
 
-### 1.6 Sistematika Penulisan
+### 1.6 Data Responden Penelitian
+
+Untuk mendukung validasi kebutuhan sistem dan user acceptance testing, telah dilakukan survey kepada pengajar menggunakan Google Form. Berikut adalah data responden yang telah berpartisipasi:
+
+#### 1.6.1 Tabel Data Responden Pengajar
+
+| No | Nama Pengajar | Institusi | Mata Pelajaran | Pengalaman Mengajar | Penggunaan Teknologi | Kesediaan Testing |
+|----|---------------|-----------|----------------|-------------------|-------------------|------------------|
+| 1 | Dra. Siti Aminah, M.Pd | SMA Negeri 1 Jakarta | Matematika | 15 tahun | Sedang | Ya |
+| 2 | Ahmad Fauzi, S.Pd | SMP Negeri 5 Bandung | IPA Terpadu | 8 tahun | Tinggi | Ya |
+| 3 | Dr. Maria Susanti | SMK Negeri 2 Surabaya | Bahasa Inggris | 12 tahun | Tinggi | Ya |
+| 4 | Budi Santoso, M.Pd | SMA Swasta Al-Azhar | Fisika | 10 tahun | Sedang | Ya |
+| 5 | Rina Handayani, S.Pd | SMP Negeri 3 Yogya | Bahasa Indonesia | 6 tahun | Rendah | Tidak |
+| 6 | Prof. Dr. Hadi Wijaya | Universitas Brawijaya | Kimia | 20 tahun | Tinggi | Ya |
+| 7 | Dewi Kartika, M.Pd | SMA Negeri 2 Medan | Biologi | 9 tahun | Sedang | Ya |
+| 8 | Rizki Pratama, S.Pd | SMK Negeri 1 Semarang | Teknik Informatika | 5 tahun | Tinggi | Ya |
+| 9 | Lestari Wulandari, M.Pd | SMP Swasta Budi Mulia | Matematika | 11 tahun | Sedang | Ya |
+| 10 | Dr. Bambang Sutrisno | SMA Negeri 3 Malang | Sejarah | 18 tahun | Rendah | Tidak |
+| 11 | Fatimah Zahra, S.Pd | SMP Negeri 4 Palembang | PKn | 7 tahun | Sedang | Ya |
+| 12 | Agus Setiawan, M.Pd | SMK Negeri 3 Bekasi | Akuntansi | 13 tahun | Tinggi | Ya |
+| 13 | Nova Anggraini, S.Pd | SMA Swasta Kristen | Ekonomi | 4 tahun | Tinggi | Ya |
+| 14 | Drs. Wahyu Hidayat | SMP Negeri 1 Solo | Geografi | 16 tahun | Rendah | Tidak |
+| 15 | Indira Sari, M.Pd | SMA Negeri 1 Denpasar | Sosiologi | 8 tahun | Sedang | Ya |
+| 16 | Muhammad Yusuf, S.Pd | SMK Negeri 2 Makassar | Teknik Mesin | 6 tahun | Sedang | Ya |
+| 17 | Dr. Sari Dewi Lestari | Universitas Airlangga | Psikologi | 14 tahun | Tinggi | Ya |
+| 18 | Hendra Gunawan, M.Pd | SMA Negeri 2 Padang | Olahraga | 10 tahun | Rendah | Tidak |
+| 19 | Yuni Astuti, S.Pd | SMP Negeri 2 Balikpapan | Seni Budaya | 5 tahun | Sedang | Ya |
+| 20 | Rudi Hermawan, M.Pd | SMK Negeri 1 Batam | Elektronika | 12 tahun | Tinggi | Ya |
+
+#### 1.6.2 Analisis Demografis Responden
+
+**Berdasarkan Jenjang Pendidikan:**
+- SMA/SMK: 50% (10 responden)
+- SMP: 35% (7 responden)
+- Universitas: 15% (3 responden)
+
+**Berdasarkan Pengalaman Mengajar:**
+- 1-5 tahun: 20% (4 responden)
+- 6-10 tahun: 35% (7 responden)
+- 11-15 tahun: 25% (5 responden)
+- >15 tahun: 20% (4 responden)
+
+**Berdasarkan Tingkat Penggunaan Teknologi:**
+- Tinggi: 40% (8 responden)
+- Sedang: 45% (9 responden)
+- Rendah: 15% (3 responden)
+
+**Kesediaan Berpartisipasi dalam Testing:**
+- Bersedia: 80% (16 responden)
+- Tidak bersedia: 20% (4 responden)
+
+#### 1.6.3 Hasil Survey Kebutuhan Sistem
+
+Berdasarkan hasil survey Google Form, diperoleh insight berikut:
+
+**Permasalahan Utama dalam Pembuatan Soal (Multiple Choice):**
+1. Waktu pembuatan yang lama: 85%
+2. Kesulitan variasi soal: 70%
+3. Menentukan tingkat kesulitan: 60%
+4. Kurangnya bank soal: 55%
+5. Proses review yang manual: 45%
+
+**Fitur yang Paling Diinginkan:**
+1. Generate soal otomatis: 90%
+2. Filter kualitas soal: 85%
+3. Bank soal tersimpan: 80%
+4. Analytics hasil ujian: 75%
+5. Kode akses mudah: 70%
+
+**Jenis Soal yang Sering Digunakan:**
+1. Pilihan ganda: 95%
+2. Essay: 70%
+3. Benar/Salah: 60%
+4. Isian singkat: 40%
+
+**Ekspektasi Waktu Penghematan:**
+- 50-70% penghematan waktu: 60% responden
+- 30-50% penghematan waktu: 30% responden
+- <30% penghematan waktu: 10% responden
+
+#### 1.6.4 Validasi Konsep dengan Responden
+
+Dari hasil survey, dapat disimpulkan bahwa:
+
+1. **High Demand**: 90% responden menginginkan fitur generate soal otomatis
+2. **Pain Point Validation**: Masalah waktu pembuatan soal dialami 85% responden
+3. **Feature Validation**: Fitur-fitur utama sistem sesuai dengan kebutuhan majority responden
+4. **User Acceptance**: 80% responden bersedia berpartisipasi dalam testing fase
+5. **Technology Readiness**: 85% responden memiliki kemampuan teknologi sedang-tinggi
+
+Data responden ini akan digunakan untuk:
+- Validasi requirements analysis
+- User acceptance testing di fase pengembangan
+- Feedback untuk improvement sistem
+- Case study untuk evaluasi efektivitas sistem
+
+### 1.7 Sistematika Penulisan
 
 **BAB I PENDAHULUAN**  
-Berisi latar belakang, rumusan masalah, tujuan penelitian, manfaat penelitian, ruang lingkup penelitian, dan sistematika penulisan.
+Berisi latar belakang, rumusan masalah, tujuan penelitian, manfaat penelitian, ruang lingkup penelitian, data responden penelitian, dan sistematika penulisan.
 
 **BAB II LANDASAN TEORI**  
 Berisi teori-teori yang mendukung penelitian, tinjauan pustaka, dan kerangka pemikiran.
 
 **BAB III METODOLOGI PENELITIAN**  
-Berisi metode penelitian, analisis kebutuhan sistem, perancangan sistem, dan diagram-diagram sistem.
+Berisi metode penelitian, analisis kebutuhan sistem, perancangan sistem, diagram-diagram sistem, dan jadwal pelaksanaan penelitian.
 
 **BAB IV IMPLEMENTASI DAN PENGUJIAN**  
 Berisi implementasi sistem, pengujian fungsionalitas, dan analisis hasil pengujian.
@@ -1238,100 +1334,61 @@ Penelitian dan pengembangan sistem "Exam Expert" direncanakan akan dilaksanakan 
 - Perplexity AI API subscription
 - Domain dan SSL certificate untuk demo
 
-### 3.15 Data Responden Penelitian
+### 3.14 Jadwal Pelaksanaan Penelitian
 
-Untuk mendukung validasi kebutuhan sistem dan user acceptance testing, telah dilakukan survey kepada pengajar menggunakan Google Form. Berikut adalah data responden yang telah berpartisipasi:
+Penelitian dan pengembangan sistem "Exam Expert" direncanakan akan dilaksanakan dalam periode 8 bulan dengan rincian sebagai berikut:
 
-#### 3.15.1 Tabel Data Responden Pengajar
+| No | Kegiatan | Bulan ke- | Durasi |
+|----|----------|-----------|---------|
+| 1 | **Tahap Persiapan dan Analisis** | | |
+|   | - Studi literatur dan analisis kebutuhan | 1 | 4 minggu |
+|   | - Survey kebutuhan pengajar (Google Form) | 1 | 2 minggu |
+|   | - Analisis hasil survey dan requirements | 1-2 | 2 minggu |
+| 2 | **Tahap Perancangan Sistem** | | |
+|   | - Perancangan arsitektur sistem | 2 | 2 minggu |
+|   | - Desain database dan API | 2 | 2 minggu |
+|   | - Desain UI/UX mockup dan wireframe | 2-3 | 3 minggu |
+|   | - Review dan finalisasi desain | 3 | 1 minggu |
+| 3 | **Tahap Implementasi** | | |
+|   | - Setup development environment | 3 | 1 minggu |
+|   | - Implementasi backend (API + Database) | 3-4 | 4 minggu |
+|   | - Implementasi frontend (React Interface) | 4-5 | 4 minggu |
+|   | - Integrasi Perplexity AI API | 5 | 2 minggu |
+|   | - Implementasi sistem autentikasi | 5 | 2 minggu |
+| 4 | **Tahap Testing dan Debugging** | | |
+|   | - Unit testing dan integration testing | 6 | 2 minggu |
+|   | - User acceptance testing dengan responden | 6 | 2 minggu |
+|   | - Bug fixing dan optimization | 6-7 | 2 minggu |
+| 5 | **Tahap Evaluasi dan Finalisasi** | | |
+|   | - Performance testing dan security audit | 7 | 2 minggu |
+|   | - Dokumentasi sistem dan user manual | 7-8 | 3 minggu |
+|   | - Persiapan deployment dan demo | 8 | 1 minggu |
+|   | - Penulisan laporan akhir | 8 | 2 minggu |
 
-| No | Nama Pengajar | Institusi | Mata Pelajaran | Pengalaman Mengajar | Penggunaan Teknologi | Kesediaan Testing |
-|----|---------------|-----------|----------------|-------------------|-------------------|------------------|
-| 1 | Dra. Siti Aminah, M.Pd | SMA Negeri 1 Jakarta | Matematika | 15 tahun | Sedang | Ya |
-| 2 | Ahmad Fauzi, S.Pd | SMP Negeri 5 Bandung | IPA Terpadu | 8 tahun | Tinggi | Ya |
-| 3 | Dr. Maria Susanti | SMK Negeri 2 Surabaya | Bahasa Inggris | 12 tahun | Tinggi | Ya |
-| 4 | Budi Santoso, M.Pd | SMA Swasta Al-Azhar | Fisika | 10 tahun | Sedang | Ya |
-| 5 | Rina Handayani, S.Pd | SMP Negeri 3 Yogya | Bahasa Indonesia | 6 tahun | Rendah | Tidak |
-| 6 | Prof. Dr. Hadi Wijaya | Universitas Brawijaya | Kimia | 20 tahun | Tinggi | Ya |
-| 7 | Dewi Kartika, M.Pd | SMA Negeri 2 Medan | Biologi | 9 tahun | Sedang | Ya |
-| 8 | Rizki Pratama, S.Pd | SMK Negeri 1 Semarang | Teknik Informatika | 5 tahun | Tinggi | Ya |
-| 9 | Lestari Wulandari, M.Pd | SMP Swasta Budi Mulia | Matematika | 11 tahun | Sedang | Ya |
-| 10 | Dr. Bambang Sutrisno | SMA Negeri 3 Malang | Sejarah | 18 tahun | Rendah | Tidak |
-| 11 | Fatimah Zahra, S.Pd | SMP Negeri 4 Palembang | PKn | 7 tahun | Sedang | Ya |
-| 12 | Agus Setiawan, M.Pd | SMK Negeri 3 Bekasi | Akuntansi | 13 tahun | Tinggi | Ya |
-| 13 | Nova Anggraini, S.Pd | SMA Swasta Kristen | Ekonomi | 4 tahun | Tinggi | Ya |
-| 14 | Drs. Wahyu Hidayat | SMP Negeri 1 Solo | Geografi | 16 tahun | Rendah | Tidak |
-| 15 | Indira Sari, M.Pd | SMA Negeri 1 Denpasar | Sosiologi | 8 tahun | Sedang | Ya |
-| 16 | Muhammad Yusuf, S.Pd | SMK Negeri 2 Makassar | Teknik Mesin | 6 tahun | Sedang | Ya |
-| 17 | Dr. Sari Dewi Lestari | Universitas Airlangga | Psikologi | 14 tahun | Tinggi | Ya |
-| 18 | Hendra Gunawan, M.Pd | SMA Negeri 2 Padang | Olahraga | 10 tahun | Rendah | Tidak |
-| 19 | Yuni Astuti, S.Pd | SMP Negeri 2 Balikpapan | Seni Budaya | 5 tahun | Sedang | Ya |
-| 20 | Rudi Hermawan, M.Pd | SMK Negeri 1 Batam | Elektronika | 12 tahun | Tinggi | Ya |
+#### 3.14.1 Milestone dan Deliverables
 
-#### 3.15.2 Analisis Demografis Responden
+| Milestone | Target Waktu | Deliverable |
+|-----------|--------------|-------------|
+| **M1: Requirements Analysis** | Akhir Bulan 1 | Dokumen analisis kebutuhan dan hasil survey |
+| **M2: System Design** | Akhir Bulan 2 | Dokumen perancangan sistem dan desain UI/UX |
+| **M3: Backend Development** | Akhir Bulan 4 | API backend yang functional dengan database |
+| **M4: Frontend Development** | Akhir Bulan 5 | Interface pengguna yang terintegrasi |
+| **M5: System Integration** | Akhir Bulan 6 | Sistem yang fully integrated dan tested |
+| **M6: Final Testing** | Akhir Bulan 7 | Sistem yang ready untuk deployment |
+| **M7: Documentation** | Akhir Bulan 8 | Dokumentasi lengkap dan laporan akhir |
 
-**Berdasarkan Jenjang Pendidikan:**
-- SMA/SMK: 50% (10 responden)
-- SMP: 35% (7 responden)
-- Universitas: 15% (3 responden)
+#### 3.14.2 Resource Allocation
 
-**Berdasarkan Pengalaman Mengajar:**
-- 1-5 tahun: 20% (4 responden)
-- 6-10 tahun: 35% (7 responden)
-- 11-15 tahun: 25% (5 responden)
-- >15 tahun: 20% (4 responden)
+**Human Resources:**
+- 1 Developer (Full-stack)
+- 1 UI/UX Designer (Part-time, bulan 2-3)
+- 1 Supervisor/Pembimbing
+- Responden pengajar untuk testing (16 orang dari survey)
 
-**Berdasarkan Tingkat Penggunaan Teknologi:**
-- Tinggi: 40% (8 responden)
-- Sedang: 45% (9 responden)
-- Rendah: 15% (3 responden)
+**Technology Resources:**
+- Development tools dan IDE
+- Cloud hosting untuk testing environment
+- Perplexity AI API subscription
+- Domain dan SSL certificate untuk demo
 
-**Kesediaan Berpartisipasi dalam Testing:**
-- Bersedia: 80% (16 responden)
-- Tidak bersedia: 20% (4 responden)
-
-#### 3.15.3 Hasil Survey Kebutuhan Sistem
-
-Berdasarkan hasil survey Google Form, diperoleh insight berikut:
-
-**Permasalahan Utama dalam Pembuatan Soal (Multiple Choice):**
-1. Waktu pembuatan yang lama: 85%
-2. Kesulitan variasi soal: 70%
-3. Menentukan tingkat kesulitan: 60%
-4. Kurangnya bank soal: 55%
-5. Proses review yang manual: 45%
-
-**Fitur yang Paling Diinginkan:**
-1. Generate soal otomatis: 90%
-2. Filter kualitas soal: 85%
-3. Bank soal tersimpan: 80%
-4. Analytics hasil ujian: 75%
-5. Kode akses mudah: 70%
-
-**Jenis Soal yang Sering Digunakan:**
-1. Pilihan ganda: 95%
-2. Essay: 70%
-3. Benar/Salah: 60%
-4. Isian singkat: 40%
-
-**Ekspektasi Waktu Penghematan:**
-- 50-70% penghematan waktu: 60% responden
-- 30-50% penghematan waktu: 30% responden
-- <30% penghematan waktu: 10% responden
-
-#### 3.15.4 Validasi Konsep dengan Responden
-
-Dari hasil survey, dapat disimpulkan bahwa:
-
-1. **High Demand**: 90% responden menginginkan fitur generate soal otomatis
-2. **Pain Point Validation**: Masalah waktu pembuatan soal dialami 85% responden
-3. **Feature Validation**: Fitur-fitur utama sistem sesuai dengan kebutuhan majority responden
-4. **User Acceptance**: 80% responden bersedia berpartisipasi dalam testing fase
-5. **Technology Readiness**: 85% responden memiliki kemampuan teknologi sedang-tinggi
-
-Data responden ini akan digunakan untuk:
-- Validasi requirements analysis
-- User acceptance testing di fase pengembangan
-- Feedback untuk improvement sistem
-- Case study untuk evaluasi efektivitas sistem
-
-Metodologi penelitian ini dirancang untuk memastikan pengembangan sistem yang robust, scalable, dan user-friendly dengan mempertimbangkan aspek teknis, keamanan, dan pengalaman pengguna. Pendekatan iteratif memungkinkan perbaikan berkelanjutan berdasarkan feedback dan testing results dari responden yang telah teridentifikasi.
+Metodologi penelitian ini dirancang untuk memastikan pengembangan sistem yang robust, scalable, dan user-friendly dengan mempertimbangkan aspek teknis, keamanan, dan pengalaman pengguna. Pendekatan iteratif memungkinkan perbaikan berkelanjutan berdasarkan feedback dan testing results dari responden yang telah teridentifikasi di BAB I.
