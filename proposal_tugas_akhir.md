@@ -517,4 +517,745 @@ Sistem "Exam Expert" menggunakan arsitektur **3-tier** dengan pemisahan yang jel
 
 **Arsitektur Teknologi:**
 ```
-Antarmuka (React + TypeScript + Vite
+Antarmuka (React + TypeScript + Vite)
+          ↕ HTTP/HTTPS
+API Gateway (Express.js + Node.js)
+          ↕
+Logika Bisnis (Controllers + Services)
+          ↕
+Basis Data (MongoDB) + AI API (Perplexity)
+```
+
+**Komponen Utama:**
+1. **Frontend (Client-side):**
+   - React Components untuk UI
+   - State Management dengan Context API
+   - API Client untuk komunikasi dengan backend
+   - Routing dengan React Router
+
+2. **Backend (Server-side):**
+   - Express.js sebagai web framework
+   - Middleware untuk autentikasi dan logging
+   - Controllers untuk menangani request/response
+   - Services untuk logika bisnis
+   - Models untuk interaksi dengan database
+
+3. **Database Layer:**
+   - MongoDB untuk penyimpanan data
+   - Mongoose sebagai ODM (Object Document Mapper)
+   - Indeksing untuk optimasi performa
+
+4. **External Services:**
+   - Perplexity AI API untuk pembangkit soal
+   - File upload service untuk verifikasi dokumen
+   - Email service untuk notifikasi
+
+#### 3.3.2 Use Case Diagram
+
+```mermaid
+graph TB
+    subgraph "Sistem Exam Expert"
+        subgraph "Pengajar"
+            UC1[Registrasi & Verifikasi]
+            UC2[Login/Logout]
+            UC3[Generate Soal AI]
+            UC4[Filter & Approve Soal]
+            UC5[Buat Kuis]
+            UC6[Kelola Kuis]
+            UC7[Monitor Peserta]
+            UC8[Lihat Statistik]
+            UC9[Export Hasil]
+        end
+        
+        subgraph "Pelajar"
+            UC10[Registrasi]
+            UC11[Login/Logout]
+            UC12[Join Kuis dengan Kode]
+            UC13[Kerjakan Soal]
+            UC14[Submit Jawaban]
+            UC15[Lihat Hasil]
+            UC16[Review Jawaban]
+            UC17[Lihat Riwayat]
+        end
+        
+        subgraph "Admin"
+            UC18[Kelola User]
+            UC19[Verifikasi Pengajar]
+            UC20[Monitor Sistem]
+        end
+    end
+    
+    Teacher[👨‍🏫 Pengajar] --> UC1
+    Teacher --> UC2
+    Teacher --> UC3
+    Teacher --> UC4
+    Teacher --> UC5
+    Teacher --> UC6
+    Teacher --> UC7
+    Teacher --> UC8
+    Teacher --> UC9
+    
+    Student[👨‍🎓 Pelajar] --> UC10
+    Student --> UC11
+    Student --> UC12
+    Student --> UC13
+    Student --> UC14
+    Student --> UC15
+    Student --> UC16
+    Student --> UC17
+    
+    Admin[👨‍💼 Admin] --> UC18
+    Admin --> UC19
+    Admin --> UC20
+    
+    UC3 --> AI[🤖 Perplexity AI]
+    UC1 --> Email[📧 Email Service]
+    UC9 --> FileSystem[📁 File System]
+```
+
+#### 3.3.3 Activity Diagram
+
+##### 3.3.3.1 Activity Diagram - Proses Generate Soal AI
+
+```mermaid
+flowchart TD
+    Start([Mulai]) --> Login{Login sebagai Pengajar?}
+    Login --No--> LoginPage[Halaman Login]
+    LoginPage --> Login
+    Login --Yes--> Dashboard[Dashboard Pengajar]
+    
+    Dashboard --> SelectGenerate[Pilih Generate Soal]
+    SelectGenerate --> InputParams[Input Parameter:
+    - Topik
+    - Tingkat Kesulitan  
+    - Jenis Soal
+    - Jumlah Soal]
+    
+    InputParams --> ValidateParams{Validasi Parameter}
+    ValidateParams --Invalid--> ErrorMsg[Tampilkan Pesan Error]
+    ErrorMsg --> InputParams
+    
+    ValidateParams --Valid--> CallAI[Panggil Perplexity AI API]
+    CallAI --> ProcessAI{AI Response OK?}
+    
+    ProcessAI --Error--> AIError[Tampilkan Error AI]
+    AIError --> InputParams
+    
+    ProcessAI --Success--> ParseResponse[Parse Response AI]
+    ParseResponse --> SaveTempDB[Simpan ke Temporary Database]
+    SaveTempDB --> DisplayResults[Tampilkan Hasil Generate]
+    
+    DisplayResults --> ReviewLoop{Review Setiap Soal}
+    ReviewLoop --> ReviewSoal[Review Soal Individual:
+    - Approve ✓
+    - Reject ✗  
+    - Edit ✏️]
+    
+    ReviewSoal --> EditSoal{Edit Soal?}
+    EditSoal --Yes--> EditForm[Form Edit Soal]
+    EditForm --> SaveEdit[Simpan Editan]
+    SaveEdit --> ReviewLoop
+    
+    EditSoal --No--> ApproveReject{Approve/Reject?}
+    ApproveReject --Approve--> SaveApproved[Simpan ke Approved Questions]
+    ApproveReject --Reject--> DeleteTemp[Hapus dari Temp]
+    
+    SaveApproved --> ReviewLoop
+    DeleteTemp --> ReviewLoop
+    ReviewLoop --Semua Selesai--> ShowApproved[Tampilkan Soal yang Disetujui]
+    
+    ShowApproved --> CreateQuiz{Buat Kuis?}
+    CreateQuiz --Yes--> QuizForm[Form Buat Kuis]
+    CreateQuiz --No--> End([Selesai])
+    
+    QuizForm --> End
+```
+
+**Detail Alur Proses Generate Soal AI:**
+
+1. **Tahap Autentikasi:**
+   - Pengajar harus login terlebih dahulu
+   - Sistem verifikasi status verifikasi akun pengajar
+   - Redirect ke dashboard jika autentikasi berhasil
+
+2. **Tahap Input Parameter:**
+   - Pengajar memilih topik/mata pelajaran dari dropdown atau input manual
+   - Menentukan tingkat kesulitan: Mudah/Sedang/Sulit
+   - Memilih jenis soal: Pilihan Ganda/Benar-Salah/Esai
+   - Menentukan jumlah soal yang diinginkan (1-50 soal)
+
+3. **Tahap Validasi:**
+   - Sistem validasi kelengkapan semua field yang required
+   - Validasi format input (contoh: jumlah soal harus angka positif)
+   - Validasi kombinasi parameter yang logis
+
+4. **Tahap Pemanggilan AI:**
+   - Sistem membuat request ke Perplexity AI API
+   - Mengirim parameter dalam format JSON
+   - Menunggu response dengan timeout 30 detik
+   - Handle error network atau API limit exceeded
+
+5. **Tahap Pemrosesan Response:**
+   - Parse response JSON dari AI
+   - Validasi struktur data yang diterima
+   - Ekstraksi soal, opsi jawaban, dan jawaban benar
+   - Simpan dalam temporary database dengan status "pending_review"
+
+6. **Tahap Review Manual:**
+   - Tampilkan soal satu per satu dalam interface review
+   - Pengajar dapat:
+     - **Approve (✓)**: Soal berkualitas dan sesuai
+     - **Reject (✗)**: Soal tidak sesuai atau berkualitas rendah  
+     - **Edit (✏️)**: Perbaiki soal sebelum approve
+   - Setiap aksi disimpan dengan timestamp dan user ID
+
+7. **Tahap Finalisasi:**
+   - Soal yang di-approve dipindah ke collection "approved_questions"
+   - Soal yang di-reject dihapus dari temporary storage
+   - Generate summary: jumlah soal approved vs rejected
+   - Opsi untuk langsung membuat kuis dari soal yang disetujui
+
+##### 3.3.3.2 Activity Diagram - Proses Mengerjakan Kuis
+
+```mermaid
+flowchart TD
+    Start([Mulai]) --> InputCode[Input Kode Kuis]
+    InputCode --> ValidateCode{Kode Valid?}
+    
+    ValidateCode --No--> ErrorCode[Tampilkan Error: Kode Tidak Valid]
+    ErrorCode --> InputCode
+    
+    ValidateCode --Yes--> CheckStudent{Sudah Login sebagai Pelajar?}
+    CheckStudent --No--> LoginStudent[Login/Register Pelajar]
+    LoginStudent --> CheckStudent
+    
+    CheckStudent --Yes--> CheckQuizStatus{Status Kuis Aktif?}
+    CheckQuizStatus --No--> QuizClosed[Tampilkan: Kuis Sudah Ditutup]
+    QuizClosed --> End([Selesai])
+    
+    CheckQuizStatus --Yes--> CheckAlreadyTaken{Sudah Pernah Mengerjakan?}
+    CheckAlreadyTaken --Yes--> AlreadyTaken[Tampilkan Hasil Sebelumnya]
+    AlreadyTaken --> End
+    
+    CheckAlreadyTaken --No--> ShowQuizInfo[Tampilkan Info Kuis:
+    - Judul
+    - Jumlah Soal
+    - Waktu
+    - Instruksi]
+    
+    ShowQuizInfo --> ConfirmStart{Konfirmasi Mulai?}
+    ConfirmStart --No--> End
+    
+    ConfirmStart --Yes--> StartTimer[Mulai Timer]
+    StartTimer --> LoadQuestion[Load Soal Pertama]
+    
+    LoadQuestion --> ShowQuestion[Tampilkan Soal dan Opsi]
+    ShowQuestion --> StudentAnswer[Pelajar Pilih/Input Jawaban]
+    
+    StudentAnswer --> SaveAnswer[Auto-save Jawaban]
+    SaveAnswer --> CheckNavigation{Navigasi?}
+    
+    CheckNavigation --Previous--> PrevQuestion[Soal Sebelumnya]
+    CheckNavigation --Next--> NextQuestion[Soal Selanjutnya]
+    CheckNavigation --Jump--> JumpQuestion[Loncat ke Soal Tertentu]
+    
+    PrevQuestion --> ShowQuestion
+    NextQuestion --> ShowQuestion  
+    JumpQuestion --> ShowQuestion
+    
+    CheckNavigation --Submit--> ConfirmSubmit{Konfirmasi Submit?}
+    ConfirmSubmit --No--> ShowQuestion
+    
+    ConfirmSubmit --Yes--> CheckTimeLeft{Waktu Masih Ada?}
+    CheckTimeLeft --No--> ForceSubmit[Auto Submit - Waktu Habis]
+    CheckTimeLeft --Yes--> ProcessSubmit[Proses Submit Manual]
+    
+    ForceSubmit --> CalculateScore[Hitung Skor]
+    ProcessSubmit --> CalculateScore
+    
+    CalculateScore --> SaveResult[Simpan Hasil ke Database]
+    SaveResult --> ShowResult[Tampilkan Hasil:
+    - Skor Total
+    - Jawaban Benar/Salah
+    - Ranking (jika ada)]
+    
+    ShowResult --> ShowReview{Boleh Review?}
+    ShowReview --Yes--> ReviewAnswers[Tampilkan Review Jawaban]
+    ShowReview --No--> End
+    ReviewAnswers --> End
+```
+
+**Detail Alur Proses Mengerjakan Kuis:**
+
+1. **Tahap Akses Kuis:**
+   - Pelajar memasukkan 6-digit kode kuis yang dibagikan pengajar
+   - Sistem validasi kode kuis di database
+   - Pengecekan status kuis (aktif/non-aktif/expired)
+   - Pengecekan apakah pelajar sudah pernah mengerjakan kuis tersebut
+
+2. **Tahap Autentikasi Pelajar:**
+   - Jika belum login, sistem redirect ke halaman login/registrasi
+   - Validasi kredensial dan role pelajar
+   - Generate session token untuk tracking progress kuis
+
+3. **Tahap Persiapan Kuis:**
+   - Tampilkan informasi kuis: judul, mata pelajaran, jumlah soal, durasi
+   - Tampilkan instruksi khusus dari pengajar (jika ada)
+   - Konfirmasi kesiapan pelajar untuk memulai
+   - Warning bahwa kuis hanya bisa dikerjakan sekali
+
+4. **Tahap Pelaksanaan Kuis:**
+   - **Timer Management**: 
+     - Start countdown timer berdasarkan durasi yang ditetapkan
+     - Warning 5 menit dan 1 menit sebelum waktu habis
+     - Auto-submit ketika waktu habis
+   
+   - **Question Navigation**:
+     - Load soal pertama dengan opsi jawaban
+     - Navigasi Previous/Next untuk berpindah soal
+     - Jump navigation dengan nomor soal
+     - Indikator soal yang sudah dijawab/belum dijawab
+   
+   - **Answer Handling**:
+     - Auto-save jawaban setiap kali pelajar memilih/mengubah jawaban
+     - Support untuk multiple choice, true/false, dan essay
+     - Validasi format jawaban (terutama untuk essay)
+
+5. **Tahap Submit dan Penilaian:**
+   - **Manual Submit**: Pelajar klik tombol submit dengan konfirmasi
+   - **Auto Submit**: System otomatis submit saat waktu habis
+   - **Score Calculation**:
+     - Objective questions: otomatis berdasarkan kunci jawaban
+     - Essay questions: disimpan untuk review manual pengajar
+     - Perhitungan persentase dan grade
+
+6. **Tahap Hasil dan Review:**
+   - Tampilkan skor total dan breakdown per soal
+   - Tampilkan ranking jika fitur leaderboard diaktifkan
+   - Review jawaban (jika diizinkan pengajar):
+     - Jawaban pelajar vs jawaban benar
+     - Penjelasan untuk jawaban yang salah
+     - Feedback dari pengajar (jika ada)
+
+7. **Tahap Penyimpanan:**
+   - Simpan hasil kuis ke database dengan timestamp
+   - Update statistik kuis (jumlah peserta, rata-rata skor)
+   - Generate log untuk audit trail
+   - Send notification ke pengajar tentang completion
+
+**Fitur Tambahan dalam Alur:**
+- **Pause/Resume**: Kemampuan pause kuis dan lanjut di waktu berbeda (jika diizinkan)
+- **Connection Handling**: Handle koneksi internet terputus dengan local storage backup
+- **Accessibility**: Support keyboard navigation dan screen reader
+- **Anti-Cheating**: Basic prevention seperti disable copy-paste dan full-screen mode
+
+### 3.4 Perancangan Basis Data
+
+#### 3.4.1 Entity Relationship Diagram (ERD)
+
+```mermaid
+erDiagram
+    User ||--o{ Question : creates
+    User ||--o{ Quiz : creates
+    User ||--o{ QuizAttempt : takes
+    Quiz ||--o{ QuizAttempt : has
+    Quiz }o--o{ Question : contains
+    Question ||--o{ Answer : has
+    QuizAttempt ||--o{ Answer : contains
+    
+    User {
+        ObjectId _id PK
+        string email UK
+        string password
+        enum role
+        object profile
+        boolean isVerified
+        string verificationDoc
+        datetime createdAt
+        datetime updatedAt
+    }
+    
+    Question {
+        ObjectId _id PK
+        string question
+        enum type
+        array options
+        string correctAnswer
+        enum difficulty
+        string topic
+        ObjectId createdBy FK
+        boolean isApproved
+        string explanation
+        datetime createdAt
+    }
+    
+    Quiz {
+        ObjectId _id PK
+        string title
+        string code UK
+        string description
+        array questionIds FK
+        ObjectId createdBy FK
+        object settings
+        enum status
+        datetime createdAt
+        datetime expiresAt
+    }
+    
+    QuizAttempt {
+        ObjectId _id PK
+        ObjectId quizId FK
+        ObjectId studentId FK
+        array answers
+        number totalScore
+        number maxScore
+        datetime startedAt
+        datetime submittedAt
+        enum status
+    }
+    
+    Answer {
+        ObjectId _id PK
+        ObjectId questionId FK
+        ObjectId attemptId FK
+        string studentAnswer
+        boolean isCorrect
+        number score
+        datetime answeredAt
+    }
+```
+
+#### 3.4.2 Spesifikasi Koleksi Database
+
+**Collection: users**
+```javascript
+{
+  _id: ObjectId,
+  email: String (unique, required),
+  password: String (hashed, required),
+  role: String (enum: ['student', 'teacher', 'admin']),
+  profile: {
+    firstName: String,
+    lastName: String,
+    institution: String,
+    phoneNumber: String,
+    avatar: String
+  },
+  isVerified: Boolean (default: false),
+  verificationDoc: String, // file path for teacher verification
+  verificationStatus: String (enum: ['pending', 'approved', 'rejected']),
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+**Collection: questions**
+```javascript
+{
+  _id: ObjectId,
+  question: String (required),
+  type: String (enum: ['multiple_choice', 'true_false', 'essay']),
+  options: [String], // for multiple_choice
+  correctAnswer: String (required),
+  difficulty: String (enum: ['easy', 'medium', 'hard']),
+  topic: String (required),
+  subject: String,
+  createdBy: ObjectId (ref: 'User'),
+  isApproved: Boolean (default: false),
+  explanation: String,
+  tags: [String],
+  aiGenerated: Boolean (default: false),
+  metadata: {
+    aiModel: String,
+    prompt: String,
+    generatedAt: Date
+  },
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+**Collection: quizzes**
+```javascript
+{
+  _id: ObjectId,
+  title: String (required),
+  code: String (unique, 6-digit),
+  description: String,
+  questionIds: [ObjectId] (ref: 'Question'),
+  createdBy: ObjectId (ref: 'User'),
+  settings: {
+    timeLimit: Number, // in minutes
+    allowRetake: Boolean,
+    showResults: Boolean,
+    showCorrectAnswers: Boolean,
+    shuffleQuestions: Boolean,
+    shuffleOptions: Boolean,
+    password: String,
+    startDate: Date,
+    endDate: Date
+  },
+  status: String (enum: ['draft', 'active', 'closed', 'archived']),
+  statistics: {
+    totalAttempts: Number,
+    averageScore: Number,
+    passRate: Number
+  },
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+**Collection: quiz_attempts**
+```javascript
+{
+  _id: ObjectId,
+  quizId: ObjectId (ref: 'Quiz'),
+  studentId: ObjectId (ref: 'User'),
+  answers: [{
+    questionId: ObjectId,
+    studentAnswer: String,
+    isCorrect: Boolean,
+    score: Number,
+    timeSpent: Number, // in seconds
+    answeredAt: Date
+  }],
+  totalScore: Number,
+  maxScore: Number,
+  percentage: Number,
+  status: String (enum: ['in_progress', 'submitted', 'timeout']),
+  startedAt: Date,
+  submittedAt: Date,
+  timeSpent: Number, // total time in seconds
+  ipAddress: String,
+  userAgent: String
+}
+```
+
+### 3.5 Perancangan Antarmuka Pengguna
+
+#### 3.5.1 Wireframe Utama
+
+**Dashboard Pengajar:**
+```
++------------------------------------------+
+|  [Logo] Exam Expert    [Profile] [Logout]|
++------------------------------------------+
+| Dashboard | Soal | Kuis | Statistik     |
++------------------------------------------+
+|                                          |
+| Selamat datang, [Nama Pengajar]         |
+|                                          |
+| +----------------+ +------------------+  |
+| | Generate Soal  | | Buat Kuis Baru   |  |
+| | [AI Icon]      | | [Quiz Icon]      |  |
+| +----------------+ +------------------+  |
+|                                          |
+| Kuis Aktif (3)                          |
+| +------------------------------------+   |
+| | Matematika Kelas 10 | [View] [Edit] |   |
+| | Kode: ABC123       | 15 peserta    |   |
+| +------------------------------------+   |
+|                                          |
+| Statistik Cepat                         |
+| Total Soal: 150 | Total Kuis: 25       |
++------------------------------------------+
+```
+
+**Interface Generate Soal:**
+```
++------------------------------------------+
+| Generate Soal Otomatis dengan AI         |
++------------------------------------------+
+|                                          |
+| Topik/Mata Pelajaran:                   |
+| [___________________________]           |
+|                                          |
+| Tingkat Kesulitan:                      |
+| ( ) Mudah  ( ) Sedang  ( ) Sulit        |
+|                                          |
+| Jenis Soal:                             |
+| ( ) Pilihan Ganda  ( ) Benar/Salah      |
+| ( ) Esai                                |
+|                                          |
+| Jumlah Soal: [__] (Max: 50)            |
+|                                          |
+| [Generate Soal] [Batal]                 |
++------------------------------------------+
+```
+
+**Interface Review Soal:**
+```
++------------------------------------------+
+| Review Soal AI (1/10)                   |
++------------------------------------------+
+|                                          |
+| Apa hasil dari 2 + 2?                   |
+|                                          |
+| A. 3                                     |
+| B. 4                                     |
+| C. 5                                     |
+| D. 6                                     |
+|                                          |
+| Jawaban Benar: B                        |
+| Tingkat: Mudah | Topik: Matematika      |
+|                                          |
+| [✓ Approve] [✗ Reject] [✏️ Edit]        |
+|                                          |
+| [← Sebelumnya] [Selanjutnya →]          |
++------------------------------------------+
+```
+
+#### 3.5.2 Design System
+
+**Color Palette:**
+- Primary: #3B82F6 (Blue)
+- Secondary: #10B981 (Green)
+- Accent: #F59E0B (Amber)
+- Error: #EF4444 (Red)
+- Warning: #F97316 (Orange)
+- Success: #22C55E (Green)
+- Neutral: #6B7280 (Gray)
+
+**Typography:**
+- Heading: Inter Bold (24px, 20px, 18px, 16px)
+- Body: Inter Regular (16px, 14px)
+- Caption: Inter Light (12px)
+
+**Component Library:**
+- Buttons: Primary, Secondary, Outline, Text
+- Form Controls: Input, Select, Checkbox, Radio, Textarea
+- Cards: Default, Hover, Selected states
+- Navigation: Breadcrumb, Tabs, Sidebar
+- Feedback: Alert, Toast, Modal, Loading
+
+### 3.6 Jadwal Pelaksanaan Penelitian
+
+#### 3.6.1 Timeline Pengembangan (16 Minggu)
+
+| Minggu | Aktivitas | Deliverable |
+|--------|-----------|-------------|
+| 1-2 | Analisis Kebutuhan & Perancangan Sistem | Dokumen SRS, ERD, Wireframe |
+| 3-4 | Setup Development Environment & Backend Foundation | API Authentication, Database Schema |
+| 5-6 | Implementasi Core Backend Features | User Management, Question Generation API |
+| 7-8 | Implementasi Frontend Foundation | React App, Routing, Authentication UI |
+| 9-10 | Implementasi AI Integration & Question Management | Working AI Question Generator |
+| 11-12 | Implementasi Quiz Management & Student Interface | Quiz Creation, Student Quiz Taking |
+| 13-14 | Implementasi Statistics & Reporting | Dashboard, Analytics, Export Features |
+| 15 | Testing & Bug Fixes | Test Reports, Bug Fixes |
+| 16 | Deployment & Documentation | Production Deploy, User Manual |
+
+#### 3.6.2 Milestone dan Deliverables
+
+**Milestone 1 (Minggu 2): Design & Planning Complete**
+- Completed system requirements specification
+- Database design finalized
+- UI/UX wireframes and mockups ready
+- Technical architecture documented
+
+**Milestone 2 (Minggu 6): Backend Core Complete**
+- User authentication and authorization working
+- Database models and relationships implemented
+- Basic API endpoints operational
+- AI integration for question generation working
+
+**Milestone 3 (Minggu 10): Frontend Core Complete**
+- React application with routing functional
+- User interface for all major features implemented
+- Integration between frontend and backend APIs
+- Responsive design working on mobile and desktop
+
+**Milestone 4 (Minggu 14): Full Feature Complete**
+- All planned features implemented and integrated
+- Question generation, quiz management, and statistics working
+- Student quiz-taking experience complete
+- Teacher dashboard and management tools functional
+
+**Milestone 5 (Minggu 16): Production Ready**
+- Application tested and debugged
+- Deployed to production environment
+- Documentation and user manual complete
+- Ready for user acceptance testing
+
+#### 3.6.3 Resource Requirements
+
+**Human Resources:**
+- 1 Full-stack Developer (Student researcher)
+- 1 Academic Supervisor
+- 20 Teacher respondents for testing
+- 100+ Student testers
+
+**Technical Resources:**
+- Development laptop with minimum 8GB RAM
+- Cloud hosting service (DigitalOcean/AWS)
+- MongoDB Atlas database
+- Perplexity AI API access
+- Domain name and SSL certificate
+- File storage service for document uploads
+
+**Software Tools:**
+- VS Code atau IDE serupa
+- Git version control
+- Postman untuk API testing
+- MongoDB Compass
+- Figma untuk UI design
+- Project management tools (Trello/Notion)
+
+### 3.7 Metode Pengujian
+
+#### 3.7.1 Strategi Pengujian
+
+**Unit Testing:**
+- Test coverage minimal 80% untuk backend logic
+- Jest untuk JavaScript/Node.js testing
+- Mocha/Chai untuk API endpoint testing
+- React Testing Library untuk component testing
+
+**Integration Testing:**
+- API integration testing dengan database
+- Frontend-backend integration testing
+- Third-party service integration (AI API) testing
+- End-to-end workflow testing
+
+**User Acceptance Testing:**
+- Alpha testing dengan 5 guru respondent
+- Beta testing dengan 20 guru dan 100 siswa
+- Usability testing dengan think-aloud protocol
+- Performance testing dengan simulated load
+
+#### 3.7.2 Test Cases
+
+**Functional Test Cases:**
+1. User registration and login
+2. Teacher verification process
+3. AI question generation with various parameters
+4. Question review and approval workflow
+5. Quiz creation and management
+6. Student quiz-taking experience
+7. Results calculation and display
+8. Statistics and reporting features
+
+**Non-Functional Test Cases:**
+1. Performance under concurrent users
+2. Security vulnerability assessment
+3. Cross-browser compatibility
+4. Mobile responsiveness
+5. Accessibility compliance
+6. Data backup and recovery
+
+#### 3.7.3 Success Criteria
+
+**Technical Success Criteria:**
+- All functional requirements implemented and working
+- System response time < 3 seconds for all operations
+- 99%+ uptime during testing period
+- Zero critical security vulnerabilities
+- Successful handling of 100+ concurrent users
+
+**User Acceptance Criteria:**
+- 80%+ user satisfaction score from teachers
+- 90%+ successful quiz completion rate for students
+- 70%+ reduction in question creation time for teachers
+- 85%+ users find the interface intuitive and easy to use
+
+---
