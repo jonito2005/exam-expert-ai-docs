@@ -7,28 +7,36 @@ Dokumentasi ini berisi diagram-diagram sistem untuk aplikasi ExamExpert-AI yang 
 ### 1. [Diagram Sequence](./sequence-diagrams.md)
 Menunjukkan interaksi antar komponen sistem dalam urutan waktu:
 - **Alur Autentikasi Pengguna** - Proses login dan registrasi
-- **Proses Persetujuan Pengajar** - Alur persetujuan Pengajar oleh admin
+- **Proses Persetujuan Guru** - Alur persetujuan guru oleh admin
 - **Proses Pembuatan dan Tinjauan Soal** - Proses pembuatan dan review soal AI
 - **Pembuatan dan Pengelolaan Kuis** - Pembuatan dan pengelolaan kuis
-- **Proses Pelajar Mengerjakan Kuis** - Proses Pelajar mengerjakan kuis
+- **Proses Siswa Mengerjakan Kuis** - Proses siswa mengerjakan kuis
 - **Dashboard Admin dan Statistik** - Dashboard admin dan statistik sistem
+- **Proses Registrasi Siswa vs Guru** - Perbandingan alur registrasi yang berbeda
+- **Detail Upload Dokumen Guru** - Proses upload dokumen step-by-step
+- **Notifikasi dan Status Update** - Sistem notifikasi real-time
 
 ### 2. [Diagram Aktivitas](./activity-diagrams.md)
 Menggambarkan alur aktivitas dan decision points dalam sistem:
-- **Proses Pendaftaran dan Persetujuan Pengajar** - Alur registrasi dan persetujuan Pengajar
+- **Proses Pendaftaran dan Persetujuan Guru** - Alur registrasi dan persetujuan guru
 - **Proses Pembuatan dan Tinjauan Soal AI** - Proses generate dan review soal AI
 - **Proses Pembuatan dan Eksekusi Kuis** - Pembuatan dan eksekusi kuis
 - **Alur Autentikasi Pengguna** - Alur autentikasi dengan decision points
 - **Proses Pengelolaan Pengguna Admin** - Pengelolaan user oleh admin
 - **Proses Statistik dan Analitik Soal** - Statistik dan analitik soal
+- **Proses Registrasi Pengguna (Perbandingan Siswa vs Guru)** - Flowchart registrasi berbeda
+- **Detail Aktivitas Upload dan Verifikasi Dokumen Guru** - Proses upload dokumen detail
 
 ### 3. [Diagram Use Case](./use-case-diagrams.md)
 Menunjukkan fungsionalitas sistem dari perspektif pengguna:
-- **Use Case Sistem Keseluruhan** - Use case keseluruhan sistem
-- **Use Case Pengelolaan Pengajar** - Pengelolaan Pengajar
-- **Use Case Pengelolaan Soal** - Pengelolaan soal
-- **Use Case Pengelolaan Kuis** - Pengelolaan kuis
-- **Use Case Administratif** - Use case administratif
+- **Use Case Sistem Keseluruhan** - Use case keseluruhan sistem dengan semua aktor
+- **Use Case Pendaftaran Pengguna** - Alur pendaftaran untuk siswa dan guru
+- **Use Case Manajemen Soal dan Kuis** - Pengelolaan soal AI dan kuis
+- **Use Case Manajemen Pengguna (Admin)** - Pengelolaan pengguna oleh admin
+- **Use Case Sistem dan Pemeliharaan** - Pemeliharaan sistem
+- **Use Case Proses Registrasi Pengguna** - Detail proses registrasi berbeda untuk siswa dan guru
+- **Use Case Upload dan Verifikasi Dokumen Guru** - Proses upload dan verifikasi dokumen
+- **Use Case Perbandingan Alur Registrasi** - Ringkasan perbedaan registrasi siswa vs guru
 
 ### 4. [Arsitektur Sistem](./system-architecture.md)
 Menggambarkan arsitektur teknis sistem:
@@ -39,14 +47,41 @@ Menggambarkan arsitektur teknis sistem:
 ## 🎯 Fitur Utama yang Dicakup
 
 ### Autentikasi dan Otorisasi
-- Registrasi pengguna (Pelajar, Pengajar, Admin)
+- **Registrasi Siswa**: Proses sederhana dengan aktivasi langsung
+- **Registrasi Guru**: Proses kompleks dengan upload dokumen dan approval admin
 - Login dengan JWT token
-- Kontrol akses berbasis peran
-- Alur persetujuan Pengajar
+- Kontrol akses berbasis peran (Admin, Guru, Siswa)
+- Alur persetujuan guru dengan verifikasi dokumen
+- Sistem notifikasi email untuk status registrasi
+
+### Perbedaan Alur Registrasi
+#### 👨‍🎓 **Registrasi Siswa (Sederhana)**
+- Input data minimal: Nama, Email, Password
+- Tidak perlu upload dokumen
+- Akun langsung aktif setelah registrasi
+- Waktu aktivasi: Instant
+
+#### 👨‍🏫 **Registrasi Guru (Kompleks)**
+- Input data lengkap: Data pribadi + institusi
+- Upload 4 dokumen wajib:
+  - 📜 Ijazah S1/S2
+  - 🏆 Sertifikat Pendidik
+  - 📝 Surat Rekomendasi
+  - 🆔 KTP/Identitas
+- Review manual oleh admin
+- Akun aktif setelah disetujui
+- Waktu aktivasi: 1-3 hari kerja
+
+### Proses Upload dan Verifikasi Dokumen
+- **Validasi File**: Format (PDF, JPG, PNG) dan ukuran (max 5MB)
+- **Penyimpanan Aman**: File disimpan dengan nama unik
+- **Preview Dokumen**: Admin dapat preview/download dokumen
+- **Status Tracking**: Real-time status update untuk guru
+- **Notifikasi Email**: Otomatis untuk setiap perubahan status
 
 ### Pengelolaan Soal
 - Generate soal otomatis menggunakan AI (Perplexity)
-- Pengajar meninjau dan approve/reject soal buatannya sendiri
+- Guru meninjau dan approve/reject soal buatannya sendiri
 - Operasi CRUD untuk soal
 - Kategorisasi berdasarkan topik dan tingkat kesulitan
 
@@ -59,13 +94,13 @@ Menggambarkan arsitektur teknis sistem:
 
 ### Dashboard dan Laporan
 - Dashboard admin dengan statistik sistem dan pengelolaan pengguna
-- Dashboard Pengajar untuk mengelola kuis, soal, dan tinjauan soal sendiri
-- Dashboard Pelajar untuk riwayat kuis
+- Dashboard guru untuk mengelola kuis, soal, dan tinjauan soal sendiri
+- Dashboard siswa untuk riwayat kuis
 - Ekspor hasil kuis (CSV/PDF)
 - Analitik dan pelaporan
 
 ### Pengelolaan File
-- Upload dokumen untuk registrasi Pengajar
+- Upload dokumen untuk registrasi guru
 - Penyimpanan file untuk sertifikat dan dokumen
 - Akses file yang aman
 
@@ -101,16 +136,16 @@ Berdasarkan Postman Collection, sistem memiliki endpoint-endpoint berikut:
 - `GET /me` - Profil pengguna saat ini
 
 ### Admin (`/api/admin`)
-- `GET /pending-teachers` - Daftar Pengajar menunggu
-- `PUT /approve-teacher/:id` - Setujui Pengajar
-- `PUT /reject-teacher/:id` - Tolak Pengajar
+- `GET /pending-teachers` - Daftar guru menunggu
+- `PUT /approve-teacher/:id` - Setujui guru
+- `PUT /reject-teacher/:id` - Tolak guru
 - `GET /statistics` - Statistik sistem
 - `GET /users` - Pengelolaan pengguna
 - `DELETE /users/:id` - Hapus pengguna
 
 ### Soal (`/api/questions`)
 - `POST /generate` - Buat soal AI
-- `GET /my-questions` - Soal milik Pengajar
+- `GET /my-questions` - Soal milik guru
 - `PUT /:id/approve` - Setujui soal sendiri
 - `PUT /:id/reject` - Tolak soal sendiri
 - `PUT /:id` - Edit soal sebelum disetujui
@@ -122,16 +157,16 @@ Berdasarkan Postman Collection, sistem memiliki endpoint-endpoint berikut:
 - `GET /:id/results` - Hasil kuis
 - `POST /:id/generate-code` - Buat kode akses
 
-### Pelajar (`/api/students`)
+### Siswa (`/api/students`)
 - `POST /join-quiz` - Bergabung kuis
 - `POST /submit-answers` - Kirim jawaban
 - `GET /history` - Riwayat kuis
 - `GET /available-quizzes` - Kuis yang tersedia
 
-### Pengajar (`/api/teachers`)
-- `POST /register` - Registrasi Pengajar dengan dokumen
+### Guru (`/api/teachers`)
+- `POST /register` - Registrasi guru dengan dokumen
 - `GET /status` - Status registrasi
-- `GET /pending` - Daftar Pengajar menunggu (admin)
+- `GET /pending` - Daftar guru menunggu (admin)
 
 ## 🚀 Cara Menggunakan Diagram
 
