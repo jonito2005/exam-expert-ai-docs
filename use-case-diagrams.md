@@ -31,6 +31,7 @@ graph TD
         UC12[Cek Status Pendaftaran]
         UC13[Buat Soal dengan AI]
         UC14[Tinjau Soal yang Dibuat]
+        UC26[Setujui/Tolak Soal Sendiri]
         UC15[Buat Kuis]
         UC16[Kelola Pengaturan Kuis]
         UC17[Buat Kode Akses]
@@ -38,6 +39,7 @@ graph TD
         UC19[Ekspor Hasil Kuis]
         UC20[Kelola Soal]
         UC21[Nonaktifkan Kuis]
+        UC30[Lihat Statistik Soal]
     end
 
     %% Use Case Admin
@@ -46,11 +48,8 @@ graph TD
         UC23[Setujui/Tolak Guru]
         UC24[Kelola Pengguna]
         UC25[Lihat Statistik Sistem]
-        UC26[Tinjau Soal]
-        UC27[Setujui/Tolak Soal]
         UC28[Buat Laporan]
         UC29[Hapus Pengguna]
-        UC30[Lihat Statistik Soal]
     end
 
     %% Autentikasi & Umum
@@ -80,6 +79,7 @@ graph TD
     Teacher --> UC12
     Teacher --> UC13
     Teacher --> UC14
+    Teacher --> UC26
     Teacher --> UC15
     Teacher --> UC16
     Teacher --> UC17
@@ -87,6 +87,7 @@ graph TD
     Teacher --> UC19
     Teacher --> UC20
     Teacher --> UC21
+    Teacher --> UC30
     Teacher --> UC2
     Teacher --> UC31
     Teacher --> UC32
@@ -96,11 +97,8 @@ graph TD
     Admin --> UC23
     Admin --> UC24
     Admin --> UC25
-    Admin --> UC26
-    Admin --> UC27
     Admin --> UC28
     Admin --> UC29
-    Admin --> UC30
     Admin --> UC2
     Admin --> UC31
     Admin --> UC32
@@ -109,7 +107,7 @@ graph TD
     %% Interaksi Sistem Eksternal
     UC13 -.->|menggunakan| AIService
     UC23 -.->|memicu| EmailService
-    UC27 -.->|memicu| EmailService
+    UC26 -.->|memicu notifikasi| EmailService
     UC34 -.->|menggunakan| EmailService
 
     %% Hubungan Include/Extend
@@ -117,6 +115,7 @@ graph TD
     UC5 -.->|memperluas| UC4
     UC15 -.->|termasuk| UC14
     UC23 -.->|termasuk| UC22
+    UC26 -.->|termasuk| UC14
 ```
 
 ## 2. Use Case Pengelolaan Guru
@@ -188,7 +187,6 @@ graph LR
 graph TD
     %% Aktor
     Teacher[👨‍🏫 Guru]
-    Admin[👨‍💼 Admin]
     AI[🤖 Layanan AI]
 
     %% Pembuatan Soal
@@ -197,21 +195,10 @@ graph TD
         QG2[Atur Tingkat Kesulitan]
         QG3[Pilih Jenis Soal]
         QG4[Atur Jumlah Soal]
-        QG5[Buat Soal]
-        QG6[Tinjau Soal yang Dibuat]
+        QG5[Buat Soal dengan AI]
+        QG6[Tinjau Soal yang Dibuat AI]
         QG7[Edit Soal]
-        QG8[Kirim untuk Persetujuan]
-    end
-
-    %% Proses Tinjauan Soal
-    subgraph "Proses Tinjauan Soal"
-        QR1[Lihat Soal Menunggu]
-        QR2[Evaluasi Kualitas Soal]
-        QR3[Periksa Keakuratan Jawaban]
-        QR4[Setujui Soal]
-        QR5[Tolak Soal]
-        QR6[Berikan Masukan]
-        QR7[Setujui Soal Massal]
+        QG8[Setujui/Tolak Soal Sendiri]
     end
 
     %% Pengelolaan Soal
@@ -238,18 +225,11 @@ graph TD
     Teacher --> QM3
     Teacher --> QM4
     Teacher --> QM5
-
-    Admin --> QR1
-    Admin --> QR2
-    Admin --> QR3
-    Admin --> QR4
-    Admin --> QR5
-    Admin --> QR6
-    Admin --> QR7
-    Admin --> QM6
+    Teacher --> QM6
 
     QG5 -.-> AI
-    QG8 --> QR1
+    QG6 --> QG8
+```
 ```
 
 ## 4. Use Case Pengelolaan Kuis
@@ -361,22 +341,20 @@ graph TD
     subgraph "Analitik Sistem"
         SA1[Lihat Dashboard]
         SA2[Buat Statistik Pengguna]
-        SA3[Lihat Statistik Soal]
+        SA3[Lihat Statistik Sistem]
         SA4[Pantau Performa Sistem]
         SA5[Ekspor Laporan Analitik]
         SA6[Lihat Log Aktivitas]
         SA7[Lacak Tren Pendaftaran]
     end
 
-    %% Pengelolaan Konten
-    subgraph "Pengelolaan Konten"
-        CM1[Tinjau Soal Menunggu]
-        CM2[Setujui/Tolak Soal]
-        CM3[Pantau Aktivitas Kuis]
-        CM4[Tinjau Konten yang Dilaporkan]
-        CM5[Kelola Pengaturan Sistem]
-        CM6[Backup Data]
-        CM7[Restore Data]
+    %% Persetujuan Guru
+    subgraph "Persetujuan Guru"
+        TA1[Tinjau Pendaftaran Guru]
+        TA2[Verifikasi Dokumen Guru]
+        TA3[Setujui Pendaftaran Guru]
+        TA4[Tolak Pendaftaran Guru]
+        TA5[Berikan Alasan Penolakan]
     end
 
     %% Pemeliharaan Sistem
@@ -407,13 +385,11 @@ graph TD
     Admin --> SA6
     Admin --> SA7
 
-    Admin --> CM1
-    Admin --> CM2
-    Admin --> CM3
-    Admin --> CM4
-    Admin --> CM5
-    Admin --> CM6
-    Admin --> CM7
+    Admin --> TA1
+    Admin --> TA2
+    Admin --> TA3
+    Admin --> TA4
+    Admin --> TA5
 
     Admin --> SM1
     Admin --> SM2
@@ -426,6 +402,4 @@ graph TD
     SA1 -.-> System
     SA4 -.-> System
     SM3 -.-> System
-    CM6 -.-> System
-    CM7 -.-> System
 ```

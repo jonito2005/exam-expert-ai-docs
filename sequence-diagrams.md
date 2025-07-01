@@ -92,37 +92,34 @@ sequenceDiagram
     participant API as Backend API
     participant AI as Layanan AI (Perplexity)
     participant DB as Database
-    participant A as Admin
 
     T->>F: Minta pembuatan soal AI
     F->>API: POST /api/questions/generate
     API->>AI: Buat soal dengan topik/kesulitan
-    AI-->>API: Soal yang dibuat
-    API->>DB: Simpan soal (status: menunggu_tinjauan)
+    AI-->>API: Soal yang dibuat AI
+    API->>DB: Simpan soal (status: draft)
     DB-->>API: Soal disimpan
-    API-->>F: Soal yang dibuat
-    F-->>T: Tampilkan soal yang dibuat
+    API-->>F: Soal yang dibuat AI
+    F-->>T: Tampilkan soal untuk ditinjau
 
-    Note over A,DB: Proses Tinjauan Admin
-    A->>F: Akses tinjauan soal
-    F->>API: GET /api/questions/pending-review
-    API->>DB: Ambil soal menunggu
-    DB-->>API: Soal menunggu
-    API-->>F: Data soal
-    F-->>A: Tampilkan soal untuk ditinjau
-
+    Note over T,F: Guru meninjau soal buatannya sendiri
+    T->>F: Tinjau kualitas soal AI
+    T->>F: Edit soal jika diperlukan
+    
     alt Setujui Soal
-        A->>F: Setujui soal terpilih
-        F->>API: POST /api/questions/approve-multiple
+        T->>F: Setujui soal
+        F->>API: PUT /api/questions/:id/approve
         API->>DB: Perbarui status soal menjadi 'disetujui'
         DB-->>API: Soal disetujui
         API-->>F: Respons berhasil
+        F-->>T: Soal tersedia untuk kuis
     else Tolak Soal
-        A->>F: Tolak dengan alasan
+        T->>F: Tolak soal
         F->>API: PUT /api/questions/:id/reject
-        API->>DB: Perbarui status soal menjadi 'ditolak'
+        API->>DB: Hapus atau tandai soal ditolak
         DB-->>API: Soal ditolak
         API-->>F: Respons berhasil
+        F-->>T: Soal tidak tersedia, perlu generate ulang
     end
 ```
 
@@ -214,10 +211,10 @@ sequenceDiagram
     API-->>F: Data pengguna
     F-->>A: Tampilkan tabel pengguna
 
-    A->>F: Lihat statistik soal
-    F->>API: GET /api/admin/question-statistics
-    API->>DB: Agregat metrik soal
-    DB-->>API: Statistik soal
-    API-->>F: Metrik soal
-    F-->>A: Tampilkan analitik soal
+    A->>F: Lihat guru menunggu persetujuan
+    F->>API: GET /api/admin/pending-teachers
+    API->>DB: Ambil guru menunggu
+    DB-->>API: Data guru menunggu
+    API-->>F: Data guru
+    F-->>A: Tampilkan daftar guru menunggu
 ```

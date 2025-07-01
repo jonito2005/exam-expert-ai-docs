@@ -43,26 +43,32 @@ flowchart TD
     C --> D[Kirim permintaan pembuatan]
     D --> E[Sistem panggil layanan AI]
     E --> F[AI membuat soal]
-    F --> G[Simpan soal dengan status 'menunggu_tinjauan']
-    G --> H[Beritahu admin untuk tinjauan]
-    H --> I[Guru melihat soal yang dibuat]
+    F --> G[Simpan soal dengan status 'draft']
+    G --> H[Tampilkan soal AI ke guru]
+    H --> I[Guru meninjau soal yang dibuat AI]
     
-    I --> J[Admin akses tinjauan soal]
-    J --> K[Admin meninjau kualitas soal]
-    K --> L{Soal dapat diterima?}
+    I --> J[Guru evaluasi kualitas soal]
+    J --> K{Soal dapat diterima?}
     
-    L -->|Ya| M[Tandai soal sebagai 'disetujui']
-    L -->|Tidak| N[Tandai soal sebagai 'ditolak']
+    K -->|Ya| L[Guru setujui soal]
+    K -->|Tidak| M[Guru tolak soal]
+    K -->|Perlu Edit| N[Guru edit soal terlebih dahulu]
     
-    M --> O[Soal tersedia untuk pembuatan kuis]
-    N --> P[Soal dihapus dari pool yang tersedia]
+    L --> O[Tandai soal sebagai 'disetujui']
+    M --> P[Hapus atau tandai soal ditolak]
+    N --> Q[Simpan perubahan soal]
     
-    O --> Q[Guru dapat menggunakan dalam kuis]
-    P --> R[Guru perlu membuat soal baru]
+    O --> R[Soal tersedia untuk pembuatan kuis]
+    P --> S[Guru perlu generate soal baru]
+    Q --> T[Kembali ke evaluasi soal]
+    
+    T --> J
+    R --> U[Guru dapat menggunakan dalam kuis]
+    S --> A
     
     style A fill:#e1f5fe
-    style Q fill:#c8e6c9
-    style R fill:#fff3e0
+    style U fill:#c8e6c9
+    style S fill:#fff3e0
 ```
 
 ## 3. Proses Pembuatan dan Eksekusi Kuis
@@ -188,7 +194,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[Admin/Guru meminta statistik] --> B[Pilih jenis laporan]
+    A[Guru/Admin meminta statistik] --> B[Pilih jenis laporan]
     B --> C{Ruang lingkup laporan?}
     
     C -->|Statistik Soal| D[Agregat data soal]
@@ -200,7 +206,7 @@ flowchart TD
     F --> I[Hitung engagement pengguna]
     
     G --> J[Soal berdasarkan topik/kesulitan]
-    G --> K[Tingkat persetujuan/penolakan]
+    G --> K[Tingkat persetujuan soal oleh guru]
     G --> L[Frekuensi penggunaan soal]
     
     H --> M[Skor rata-rata per kuis]

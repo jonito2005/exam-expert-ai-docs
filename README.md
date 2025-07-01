@@ -46,99 +46,99 @@ Menggambarkan arsitektur teknis sistem:
 
 ### Pengelolaan Soal
 - Generate soal otomatis menggunakan AI (Perplexity)
-- Review dan persetujuan soal oleh admin
+- Guru meninjau dan approve/reject soal buatannya sendiri
 - Operasi CRUD untuk soal
 - Kategorisasi berdasarkan topik dan tingkat kesulitan
 
-### Manajemen Kuis
+### Pengelolaan Kuis
 - Pembuatan kuis dari soal yang disetujui
-- Access code untuk join kuis
-- Timer dan scheduling kuis
-- Real-time quiz taking
-- Automated scoring
+- Kode akses untuk bergabung kuis
+- Timer dan penjadwalan kuis
+- Mengerjakan kuis real-time
+- Penilaian otomatis
 
 ### Dashboard dan Laporan
-- Admin dashboard dengan statistik sistem
-- Teacher dashboard untuk manage kuis dan soal
-- Student dashboard untuk riwayat kuis
-- Export hasil kuis (CSV/PDF)
-- Analytics dan reporting
+- Dashboard admin dengan statistik sistem dan pengelolaan pengguna
+- Dashboard guru untuk mengelola kuis, soal, dan tinjauan soal sendiri
+- Dashboard siswa untuk riwayat kuis
+- Ekspor hasil kuis (CSV/PDF)
+- Analitik dan pelaporan
 
-### Manajemen File
-- Upload dokumen untuk registrasi teacher
-- File storage untuk sertifikat dan dokumen
-- Secure file access
+### Pengelolaan File
+- Upload dokumen untuk registrasi guru
+- Penyimpanan file untuk sertifikat dan dokumen
+- Akses file yang aman
 
 ## 🔧 Teknologi yang Digunakan
 
 ### Backend
 - **Node.js** dengan Express.js
 - **MongoDB** sebagai database
-- **JWT** untuk authentication
-- **Multer** untuk file upload
-- **Perplexity AI** untuk question generation
-- **Email service** untuk notifikasi
+- **JWT** untuk autentikasi
+- **Multer** untuk upload file
+- **Perplexity AI** untuk pembuatan soal
+- **Layanan email** untuk notifikasi
 
 ### Frontend
 - **React** dengan TypeScript
 - **Vite** sebagai build tool
 - **Tailwind CSS** untuk styling
-- **Zustand** untuk state management
+- **Zustand** untuk manajemen state
 
-### Infrastructure
-- RESTful API design
-- File storage system
-- Email notification system
-- Security middleware (CORS, rate limiting)
+### Infrastruktur
+- Desain RESTful API
+- Sistem penyimpanan file
+- Sistem notifikasi email
+- Middleware keamanan (CORS, rate limiting)
 
-## 📋 Endpoints API Utama
+## 📋 Endpoint API Utama
 
 Berdasarkan Postman Collection, sistem memiliki endpoint-endpoint berikut:
 
-### Authentication (`/api/auth`)
-- `POST /register` - Registrasi user
-- `POST /login` - Login user
-- `GET /me` - Profile user saat ini
+### Autentikasi (`/api/auth`)
+- `POST /register` - Registrasi pengguna
+- `POST /login` - Login pengguna
+- `GET /me` - Profil pengguna saat ini
 
 ### Admin (`/api/admin`)
-- `GET /pending-teachers` - Daftar guru pending
-- `PUT /approve-teacher/:id` - Approve guru
-- `PUT /reject-teacher/:id` - Reject guru
+- `GET /pending-teachers` - Daftar guru menunggu
+- `PUT /approve-teacher/:id` - Setujui guru
+- `PUT /reject-teacher/:id` - Tolak guru
 - `GET /statistics` - Statistik sistem
-- `GET /users` - Manajemen user
-- `GET /question-statistics` - Statistik soal
+- `GET /users` - Pengelolaan pengguna
+- `DELETE /users/:id` - Hapus pengguna
 
-### Questions (`/api/questions`)
-- `POST /generate` - Generate soal AI
-- `POST /approve` - Approve soal
-- `GET /pending-review` - Soal pending review
-- `PUT /:id/approve` - Approve soal tunggal
-- `PUT /:id/reject` - Reject soal
+### Soal (`/api/questions`)
+- `POST /generate` - Buat soal AI
+- `GET /my-questions` - Soal milik guru
+- `PUT /:id/approve` - Setujui soal sendiri
+- `PUT /:id/reject` - Tolak soal sendiri
+- `PUT /:id` - Edit soal sebelum disetujui
 
-### Quizzes (`/api/quizzes`)
+### Kuis (`/api/quizzes`)
 - `POST /` - Buat kuis baru
-- `POST /join` - Join kuis dengan access code
-- `POST /:id/submit` - Submit jawaban kuis
+- `POST /join` - Bergabung kuis dengan kode akses
+- `POST /:id/submit` - Kirim jawaban kuis
 - `GET /:id/results` - Hasil kuis
-- `POST /:id/generate-code` - Generate access code
+- `POST /:id/generate-code` - Buat kode akses
 
-### Students (`/api/students`)
-- `POST /join-quiz` - Join kuis
-- `POST /submit-answers` - Submit jawaban
+### Siswa (`/api/students`)
+- `POST /join-quiz` - Bergabung kuis
+- `POST /submit-answers` - Kirim jawaban
 - `GET /history` - Riwayat kuis
 - `GET /available-quizzes` - Kuis yang tersedia
 
-### Teachers (`/api/teachers`)
+### Guru (`/api/teachers`)
 - `POST /register` - Registrasi guru dengan dokumen
 - `GET /status` - Status registrasi
-- `GET /pending` - Daftar guru pending (admin)
+- `GET /pending` - Daftar guru menunggu (admin)
 
 ## 🚀 Cara Menggunakan Diagram
 
-1. **Untuk Developer**: Gunakan sequence dan activity diagrams untuk memahami flow aplikasi
-2. **Untuk Project Manager**: Gunakan use case diagrams untuk overview fungsionalitas
-3. **Untuk System Architect**: Gunakan system architecture untuk understanding technical stack
-4. **Untuk Testing**: Gunakan activity diagrams untuk test case scenarios
+1. **Untuk Developer**: Gunakan diagram sequence dan aktivitas untuk memahami alur aplikasi
+2. **Untuk Project Manager**: Gunakan diagram use case untuk overview fungsionalitas
+3. **Untuk System Architect**: Gunakan arsitektur sistem untuk memahami technical stack
+4. **Untuk Testing**: Gunakan diagram aktivitas untuk skenario test case
 
 ## 📝 Catatan
 
