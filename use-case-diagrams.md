@@ -5,15 +5,15 @@
 ```mermaid
 graph TD
     %% Aktor
-    Student[👨‍🎓 Siswa]
-    Teacher[👨‍🏫 Guru]
+    Student[👨‍🎓 Pelajar]
+    Teacher[👨‍🏫 Pengajar]
     Admin[👨‍💼 Admin]
     AIService[🤖 Layanan AI]
     EmailService[📧 Layanan Email]
 
-    %% Use Case Siswa
-    subgraph "Use Case Siswa"
-        UC1[Daftar sebagai Siswa]
+    %% Use Case Pelajar
+    subgraph "Use Case Pelajar"
+        UC1[Daftar sebagai Pelajar]
         UC2[Masuk ke Sistem]
         UC3[Bergabung Kuis dengan Kode Akses]
         UC4[Mengerjakan Kuis]
@@ -24,9 +24,9 @@ graph TD
         UC9[Perbarui Profil]
     end
 
-    %% Use Case Guru
-    subgraph "Use Case Guru"
-        UC10[Daftar sebagai Guru]
+    %% Use Case Pengajar
+    subgraph "Use Case Pengajar"
+        UC10[Daftar sebagai Pengajar]
         UC11[Unggah Dokumen]
         UC12[Cek Status Pendaftaran]
         UC13[Buat Soal dengan AI]
@@ -44,8 +44,8 @@ graph TD
 
     %% Use Case Admin
     subgraph "Use Case Admin"
-        UC22[Tinjau Pendaftaran Guru]
-        UC23[Setujui/Tolak Guru]
+        UC22[Tinjau Pendaftaran Pengajar]
+        UC23[Setujui/Tolak Pengajar]
         UC24[Kelola Pengguna]
         UC25[Lihat Statistik Sistem]
         UC28[Buat Laporan]
@@ -118,17 +118,17 @@ graph TD
     UC26 -.->|termasuk| UC14
 ```
 
-## 2. Use Case Pengelolaan Guru
+## 2. Use Case Pengelolaan Pengajar
 
 ```mermaid
 graph LR
     %% Aktor
-    Teacher[👨‍🏫 Guru]
+    Teacher[👨‍🏫 Pengajar]
     Admin[👨‍💼 Admin]
     EmailSys[📧 Sistem Email]
 
-    %% Proses Pendaftaran Guru
-    subgraph "Pendaftaran Guru"
+    %% Proses Pendaftaran Pengajar
+    subgraph "Pendaftaran Pengajar"
         TR1[Isi Formulir Pendaftaran]
         TR2[Unggah Sertifikat Gelar]
         TR3[Unggah Sertifikat Mengajar]
@@ -140,10 +140,10 @@ graph LR
     %% Proses Tinjauan Admin
     subgraph "Proses Tinjauan Admin"
         AR1[Lihat Pendaftaran Menunggu]
-        AR2[Tinjau Dokumen Guru]
+        AR2[Tinjau Dokumen Pengajar]
         AR3[Verifikasi Kredensial]
-        AR4[Setujui Guru]
-        AR5[Tolak Guru]
+        AR4[Setujui Pengajar]
+        AR5[Tolak Pengajar]
         AR6[Berikan Alasan Penolakan]
     end
 
@@ -152,7 +152,7 @@ graph LR
         SN1[Kirim Email Konfirmasi]
         SN2[Kirim Email Persetujuan]
         SN3[Kirim Email Penolakan]
-        SN4[Perbarui Status Guru]
+        SN4[Perbarui Status Pengajar]
     end
 
     %% Hubungan
@@ -186,7 +186,7 @@ graph LR
 ```mermaid
 graph TD
     %% Aktor
-    Teacher[👨‍🏫 Guru]
+    Teacher[👨‍🏫 Pengajar]
     AI[🤖 Layanan AI]
 
     %% Pembuatan Soal
@@ -237,8 +237,8 @@ graph TD
 ```mermaid
 graph TB
     %% Aktor
-    Teacher[👨‍🏫 Guru]
-    Student[👨‍🎓 Siswa]
+    Teacher[👨‍🏫 Pengajar]
+    Student[👨‍🎓 Pelajar]
 
     %% Pembuatan Kuis
     subgraph "Pembuatan & Pengaturan Kuis"
@@ -275,8 +275,8 @@ graph TB
         QM8[Analisis Performa]
     end
 
-    %% Aktivitas Siswa
-    subgraph "Aktivitas Siswa"
+    %% Aktivitas Pelajar
+    subgraph "Aktivitas Pelajar"
         SA1[Lihat Kuis Tersedia]
         SA2[Lihat Riwayat Kuis]
         SA3[Periksa Nilai]
@@ -348,12 +348,12 @@ graph TD
         SA7[Lacak Tren Pendaftaran]
     end
 
-    %% Persetujuan Guru
-    subgraph "Persetujuan Guru"
-        TA1[Tinjau Pendaftaran Guru]
-        TA2[Verifikasi Dokumen Guru]
-        TA3[Setujui Pendaftaran Guru]
-        TA4[Tolak Pendaftaran Guru]
+    %% Persetujuan Pengajar
+    subgraph "Persetujuan Pengajar"
+        TA1[Tinjau Pendaftaran Pengajar]
+        TA2[Verifikasi Dokumen Pengajar]
+        TA3[Setujui Pendaftaran Pengajar]
+        TA4[Tolak Pendaftaran Pengajar]
         TA5[Berikan Alasan Penolakan]
     end
 

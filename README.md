@@ -7,15 +7,15 @@ Dokumentasi ini berisi diagram-diagram sistem untuk aplikasi ExamExpert-AI yang 
 ### 1. [Diagram Sequence](./sequence-diagrams.md)
 Menunjukkan interaksi antar komponen sistem dalam urutan waktu:
 - **Alur Autentikasi Pengguna** - Proses login dan registrasi
-- **Proses Persetujuan Guru** - Alur persetujuan guru oleh admin
+- **Proses Persetujuan Pengajar** - Alur persetujuan Pengajar oleh admin
 - **Proses Pembuatan dan Tinjauan Soal** - Proses pembuatan dan review soal AI
 - **Pembuatan dan Pengelolaan Kuis** - Pembuatan dan pengelolaan kuis
-- **Proses Siswa Mengerjakan Kuis** - Proses siswa mengerjakan kuis
+- **Proses Pelajar Mengerjakan Kuis** - Proses Pelajar mengerjakan kuis
 - **Dashboard Admin dan Statistik** - Dashboard admin dan statistik sistem
 
 ### 2. [Diagram Aktivitas](./activity-diagrams.md)
 Menggambarkan alur aktivitas dan decision points dalam sistem:
-- **Proses Pendaftaran dan Persetujuan Guru** - Alur registrasi dan persetujuan guru
+- **Proses Pendaftaran dan Persetujuan Pengajar** - Alur registrasi dan persetujuan Pengajar
 - **Proses Pembuatan dan Tinjauan Soal AI** - Proses generate dan review soal AI
 - **Proses Pembuatan dan Eksekusi Kuis** - Pembuatan dan eksekusi kuis
 - **Alur Autentikasi Pengguna** - Alur autentikasi dengan decision points
@@ -25,7 +25,7 @@ Menggambarkan alur aktivitas dan decision points dalam sistem:
 ### 3. [Diagram Use Case](./use-case-diagrams.md)
 Menunjukkan fungsionalitas sistem dari perspektif pengguna:
 - **Use Case Sistem Keseluruhan** - Use case keseluruhan sistem
-- **Use Case Pengelolaan Guru** - Pengelolaan guru
+- **Use Case Pengelolaan Pengajar** - Pengelolaan Pengajar
 - **Use Case Pengelolaan Soal** - Pengelolaan soal
 - **Use Case Pengelolaan Kuis** - Pengelolaan kuis
 - **Use Case Administratif** - Use case administratif
@@ -39,14 +39,14 @@ Menggambarkan arsitektur teknis sistem:
 ## 🎯 Fitur Utama yang Dicakup
 
 ### Autentikasi dan Otorisasi
-- Registrasi pengguna (Siswa, Guru, Admin)
+- Registrasi pengguna (Pelajar, Pengajar, Admin)
 - Login dengan JWT token
 - Kontrol akses berbasis peran
-- Alur persetujuan guru
+- Alur persetujuan Pengajar
 
 ### Pengelolaan Soal
 - Generate soal otomatis menggunakan AI (Perplexity)
-- Guru meninjau dan approve/reject soal buatannya sendiri
+- Pengajar meninjau dan approve/reject soal buatannya sendiri
 - Operasi CRUD untuk soal
 - Kategorisasi berdasarkan topik dan tingkat kesulitan
 
@@ -59,13 +59,13 @@ Menggambarkan arsitektur teknis sistem:
 
 ### Dashboard dan Laporan
 - Dashboard admin dengan statistik sistem dan pengelolaan pengguna
-- Dashboard guru untuk mengelola kuis, soal, dan tinjauan soal sendiri
-- Dashboard siswa untuk riwayat kuis
+- Dashboard Pengajar untuk mengelola kuis, soal, dan tinjauan soal sendiri
+- Dashboard Pelajar untuk riwayat kuis
 - Ekspor hasil kuis (CSV/PDF)
 - Analitik dan pelaporan
 
 ### Pengelolaan File
-- Upload dokumen untuk registrasi guru
+- Upload dokumen untuk registrasi Pengajar
 - Penyimpanan file untuk sertifikat dan dokumen
 - Akses file yang aman
 
@@ -101,16 +101,16 @@ Berdasarkan Postman Collection, sistem memiliki endpoint-endpoint berikut:
 - `GET /me` - Profil pengguna saat ini
 
 ### Admin (`/api/admin`)
-- `GET /pending-teachers` - Daftar guru menunggu
-- `PUT /approve-teacher/:id` - Setujui guru
-- `PUT /reject-teacher/:id` - Tolak guru
+- `GET /pending-teachers` - Daftar Pengajar menunggu
+- `PUT /approve-teacher/:id` - Setujui Pengajar
+- `PUT /reject-teacher/:id` - Tolak Pengajar
 - `GET /statistics` - Statistik sistem
 - `GET /users` - Pengelolaan pengguna
 - `DELETE /users/:id` - Hapus pengguna
 
 ### Soal (`/api/questions`)
 - `POST /generate` - Buat soal AI
-- `GET /my-questions` - Soal milik guru
+- `GET /my-questions` - Soal milik Pengajar
 - `PUT /:id/approve` - Setujui soal sendiri
 - `PUT /:id/reject` - Tolak soal sendiri
 - `PUT /:id` - Edit soal sebelum disetujui
@@ -122,16 +122,16 @@ Berdasarkan Postman Collection, sistem memiliki endpoint-endpoint berikut:
 - `GET /:id/results` - Hasil kuis
 - `POST /:id/generate-code` - Buat kode akses
 
-### Siswa (`/api/students`)
+### Pelajar (`/api/students`)
 - `POST /join-quiz` - Bergabung kuis
 - `POST /submit-answers` - Kirim jawaban
 - `GET /history` - Riwayat kuis
 - `GET /available-quizzes` - Kuis yang tersedia
 
-### Guru (`/api/teachers`)
-- `POST /register` - Registrasi guru dengan dokumen
+### Pengajar (`/api/teachers`)
+- `POST /register` - Registrasi Pengajar dengan dokumen
 - `GET /status` - Status registrasi
-- `GET /pending` - Daftar guru menunggu (admin)
+- `GET /pending` - Daftar Pengajar menunggu (admin)
 
 ## 🚀 Cara Menggunakan Diagram
 

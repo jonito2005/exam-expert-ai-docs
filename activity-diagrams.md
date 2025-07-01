@@ -1,33 +1,33 @@
 # Diagram Aktivitas - ExamExpert-AI
 
-## 1. Proses Pendaftaran dan Persetujuan Guru
+## 1. Proses Pendaftaran dan Persetujuan Pengajar
 
 ```mermaid
 flowchart TD
-    A[Guru mengunjungi halaman pendaftaran] --> B[Isi formulir pendaftaran]
+    A[Pengajar mengunjungi halaman pendaftaran] --> B[Isi formulir pendaftaran]
     B --> C[Unggah dokumen yang diperlukan]
     C --> D[Kirim pendaftaran]
     D --> E[Sistem validasi data]
     E --> F{Data valid?}
     
     F -->|Tidak| G[Tampilkan error validasi] --> B
-    F -->|Ya| H[Buat record guru dengan status 'menunggu']
+    F -->|Ya| H[Buat record Pengajar dengan status 'menunggu']
     H --> I[Kirim notifikasi ke admin]
-    I --> J[Kirim email konfirmasi ke guru]
-    J --> K[Guru menunggu persetujuan]
+    I --> J[Kirim email konfirmasi ke Pengajar]
+    J --> K[Pengajar menunggu persetujuan]
     
     K --> L[Admin meninjau aplikasi]
-    L --> M[Admin melihat dokumen guru]
+    L --> M[Admin melihat dokumen Pengajar]
     M --> N{Keputusan admin}
     
     N -->|Setujui| O[Perbarui status menjadi 'aktif']
     N -->|Tolak| P[Perbarui status menjadi 'ditolak']
     
-    O --> Q[Kirim email persetujuan ke guru]
+    O --> Q[Kirim email persetujuan ke Pengajar]
     P --> R[Kirim email penolakan dengan alasan]
     
-    Q --> S[Guru sekarang dapat mengakses fitur guru]
-    R --> T[Guru dapat mendaftar ulang setelah memperbaiki masalah]
+    Q --> S[Pengajar sekarang dapat mengakses fitur Pengajar]
+    R --> T[Pengajar dapat mendaftar ulang setelah memperbaiki masalah]
     
     style A fill:#e1f5fe
     style S fill:#c8e6c9
@@ -38,32 +38,32 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[Guru meminta pembuatan soal] --> B[Pilih topik dan kesulitan]
+    A[Pengajar meminta pembuatan soal] --> B[Pilih topik dan kesulitan]
     B --> C[Atur jumlah dan jenis soal]
     C --> D[Kirim permintaan pembuatan]
     D --> E[Sistem panggil layanan AI]
     E --> F[AI membuat soal]
     F --> G[Simpan soal dengan status 'draft']
-    G --> H[Tampilkan soal AI ke guru]
-    H --> I[Guru meninjau soal yang dibuat AI]
+    G --> H[Tampilkan soal AI ke Pengajar]
+    H --> I[Pengajar meninjau soal yang dibuat AI]
     
-    I --> J[Guru evaluasi kualitas soal]
+    I --> J[Pengajar evaluasi kualitas soal]
     J --> K{Soal dapat diterima?}
     
-    K -->|Ya| L[Guru setujui soal]
-    K -->|Tidak| M[Guru tolak soal]
-    K -->|Perlu Edit| N[Guru edit soal terlebih dahulu]
+    K -->|Ya| L[Pengajar setujui soal]
+    K -->|Tidak| M[Pengajar tolak soal]
+    K -->|Perlu Edit| N[Pengajar edit soal terlebih dahulu]
     
     L --> O[Tandai soal sebagai 'disetujui']
     M --> P[Hapus atau tandai soal ditolak]
     N --> Q[Simpan perubahan soal]
     
     O --> R[Soal tersedia untuk pembuatan kuis]
-    P --> S[Guru perlu generate soal baru]
+    P --> S[Pengajar perlu generate soal baru]
     Q --> T[Kembali ke evaluasi soal]
     
     T --> J
-    R --> U[Guru dapat menggunakan dalam kuis]
+    R --> U[Pengajar dapat menggunakan dalam kuis]
     S --> A
     
     style A fill:#e1f5fe
@@ -75,32 +75,32 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[Guru membuat kuis baru] --> B[Atur detail kuis]
+    A[Pengajar membuat kuis baru] --> B[Atur detail kuis]
     B --> C[Pilih soal yang disetujui]
     C --> D[Konfigurasi pengaturan kuis]
     D --> E[Atur durasi waktu]
     E --> F[Atur tanggal mulai/selesai]
     F --> G[Buat kuis]
     G --> H[Buat kode akses]
-    H --> I[Bagikan kode akses dengan siswa]
+    H --> I[Bagikan kode akses dengan Pelajar]
     
-    I --> J[Siswa masukkan kode akses]
+    I --> J[Pelajar masukkan kode akses]
     J --> K{Kode valid & kuis aktif?}
     
     K -->|Tidak| L[Tampilkan pesan error]
     K -->|Ya| M[Muat soal kuis]
     
-    M --> N[Siswa menjawab soal]
-    N --> O[Siswa kirim jawaban]
+    M --> N[Pelajar menjawab soal]
+    N --> O[Pelajar kirim jawaban]
     O --> P[Sistem hitung skor]
     P --> Q[Simpan hasil]
-    Q --> R[Tampilkan hasil ke siswa]
+    Q --> R[Tampilkan hasil ke Pelajar]
     R --> S[Perbarui statistik kuis]
     
-    S --> T[Guru dapat melihat semua hasil]
+    S --> T[Pengajar dapat melihat semua hasil]
     T --> U[Buat laporan dan analitik]
     
-    L --> V[Siswa coba lagi dengan kode yang benar]
+    L --> V[Pelajar coba lagi dengan kode yang benar]
     V --> J
     
     style A fill:#e1f5fe
@@ -129,8 +129,8 @@ flowchart TD
     L --> M{Peran pengguna?}
     
     M -->|Admin| N[Arahkan ke dashboard admin]
-    M -->|Guru| O[Arahkan ke dashboard guru]
-    M -->|Siswa| P[Arahkan ke dashboard siswa]
+    M -->|Pengajar| O[Arahkan ke dashboard Pengajar]
+    M -->|Pelajar| P[Arahkan ke dashboard Pelajar]
     
     I --> Q[Hubungi admin untuk status]
     J --> R[Daftar ulang atau hubungi support]
@@ -194,7 +194,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[Guru/Admin meminta statistik] --> B[Pilih jenis laporan]
+    A[Pengajar/Admin meminta statistik] --> B[Pilih jenis laporan]
     B --> C{Ruang lingkup laporan?}
     
     C -->|Statistik Soal| D[Agregat data soal]
@@ -206,11 +206,11 @@ flowchart TD
     F --> I[Hitung engagement pengguna]
     
     G --> J[Soal berdasarkan topik/kesulitan]
-    G --> K[Tingkat persetujuan soal oleh guru]
+    G --> K[Tingkat persetujuan soal oleh Pengajar]
     G --> L[Frekuensi penggunaan soal]
     
     H --> M[Skor rata-rata per kuis]
-    H --> N[Tingkat partisipasi siswa]
+    H --> N[Tingkat partisipasi Pelajar]
     H --> O[Analisis waktu]
     
     I --> P[Jumlah pengguna aktif]

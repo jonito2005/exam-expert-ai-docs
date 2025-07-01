@@ -9,8 +9,8 @@ graph TB
         subgraph "Komponen React"
             Auth[Halaman Autentikasi]
             AdminUI[Dashboard Admin]
-            TeacherUI[Dashboard Guru]
-            StudentUI[Dashboard Siswa]
+            TeacherUI[Dashboard Pengajar]
+            StudentUI[Dashboard Pelajar]
             QuizUI[Interface Kuis]
         end
     end
@@ -22,8 +22,8 @@ graph TB
         subgraph "Route API"
             AuthRoutes[Route Autentikasi]
             AdminRoutes[Route Admin]
-            TeacherRoutes[Route Guru]
-            StudentRoutes[Route Siswa]
+            TeacherRoutes[Route Pengajar]
+            StudentRoutes[Route Pelajar]
             QuizRoutes[Route Kuis]
             QuestionRoutes[Route Soal]
         end
@@ -41,8 +41,8 @@ graph TB
         subgraph "Controller"
             AuthCtrl[Controller Auth]
             AdminCtrl[Controller Admin]
-            TeacherCtrl[Controller Guru]
-            StudentCtrl[Controller Siswa]
+            TeacherCtrl[Controller Pengajar]
+            StudentCtrl[Controller Pelajar]
             QuizCtrl[Controller Kuis]
             QuestionCtrl[Controller Soal]
         end
@@ -154,7 +154,7 @@ erDiagram
         string nama
         string email UK
         string password
-        enum peran "admin,guru,siswa"
+        enum peran "admin,Pengajar,Pelajar"
         enum status "aktif,menunggu,ditolak,dihapus"
         string institusi
         string keahlian
@@ -199,7 +199,7 @@ erDiagram
     QUIZ_RESULTS {
         ObjectId _id PK
         ObjectId quiz_id FK
-        ObjectId siswa_id FK
+        ObjectId Pelajar_id FK
         array jawaban
         number skor
         number total_pertanyaan

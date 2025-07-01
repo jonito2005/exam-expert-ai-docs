@@ -15,11 +15,11 @@ sequenceDiagram
     API->>DB: Buat record pengguna
     DB-->>API: Pengguna dibuat
     
-    alt Pendaftaran Guru
+    alt Pendaftaran Pengajar
         API->>Email: Kirim email verifikasi
         Email-->>U: Email verifikasi
         API-->>F: Pendaftaran menunggu persetujuan
-    else Pendaftaran Siswa
+    else Pendaftaran Pelajar
         API-->>F: Pendaftaran berhasil
     end
     
@@ -34,21 +34,21 @@ sequenceDiagram
     F-->>U: Login berhasil
 ```
 
-## 2. Proses Persetujuan Guru
+## 2. Proses Persetujuan Pengajar
 
 ```mermaid
 sequenceDiagram
-    participant T as Guru
+    participant T as Pengajar
     participant F as Frontend
     participant API as Backend API
     participant DB as Database
     participant A as Admin
     participant Email as Layanan Email
 
-    T->>F: Daftar sebagai guru dengan dokumen
+    T->>F: Daftar sebagai Pengajar dengan dokumen
     F->>API: POST /api/teachers/register (multipart/form-data)
-    API->>DB: Simpan data guru + dokumen
-    DB-->>API: Record guru dibuat (menunggu)
+    API->>DB: Simpan data Pengajar + dokumen
+    DB-->>API: Record Pengajar dibuat (menunggu)
     API->>Email: Beritahu admin pendaftaran baru
     API-->>F: Pendaftaran dikirim
     F-->>T: Pesan menunggu persetujuan
@@ -56,28 +56,28 @@ sequenceDiagram
     Note over A,Email: Proses Tinjauan Admin
     A->>F: Akses dashboard admin
     F->>API: GET /api/admin/pending-teachers
-    API->>DB: Ambil guru yang menunggu
-    DB-->>API: Daftar guru menunggu
-    API-->>F: Data guru
-    F-->>A: Tampilkan guru menunggu
+    API->>DB: Ambil Pengajar yang menunggu
+    DB-->>API: Daftar Pengajar menunggu
+    API-->>F: Data Pengajar
+    F-->>A: Tampilkan Pengajar menunggu
 
-    A->>F: Tinjau detail guru
+    A->>F: Tinjau detail Pengajar
     F->>API: GET /api/teachers/:id
-    API->>DB: Ambil detail guru
-    DB-->>API: Detail guru + dokumen
-    API-->>F: Data guru
-    F-->>A: Tampilkan profil guru
+    API->>DB: Ambil detail Pengajar
+    DB-->>API: Detail Pengajar + dokumen
+    API-->>F: Data Pengajar
+    F-->>A: Tampilkan profil Pengajar
 
-    alt Setujui Guru
-        A->>F: Setujui guru
+    alt Setujui Pengajar
+        A->>F: Setujui Pengajar
         F->>API: PUT /api/admin/approve-teacher/:id
-        API->>DB: Perbarui status guru menjadi 'aktif'
+        API->>DB: Perbarui status Pengajar menjadi 'aktif'
         API->>Email: Kirim notifikasi persetujuan
         Email-->>T: Email persetujuan
-    else Tolak Guru
+    else Tolak Pengajar
         A->>F: Tolak dengan alasan
         F->>API: PUT /api/admin/reject-teacher/:id
-        API->>DB: Perbarui status guru menjadi 'ditolak'
+        API->>DB: Perbarui status Pengajar menjadi 'ditolak'
         API->>Email: Kirim notifikasi penolakan
         Email-->>T: Email penolakan dengan alasan
     end
@@ -87,7 +87,7 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant T as Guru
+    participant T as Pengajar
     participant F as Frontend
     participant API as Backend API
     participant AI as Layanan AI (Perplexity)
@@ -102,7 +102,7 @@ sequenceDiagram
     API-->>F: Soal yang dibuat AI
     F-->>T: Tampilkan soal untuk ditinjau
 
-    Note over T,F: Guru meninjau soal buatannya sendiri
+    Note over T,F: Pengajar meninjau soal buatannya sendiri
     T->>F: Tinjau kualitas soal AI
     T->>F: Edit soal jika diperlukan
     
@@ -127,14 +127,14 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant T as Guru
+    participant T as Pengajar
     participant F as Frontend
     participant API as Backend API
     participant DB as Database
 
     T->>F: Buat kuis baru
     F->>API: GET /api/questions (soal yang disetujui)
-    API->>DB: Ambil soal guru yang disetujui
+    API->>DB: Ambil soal Pengajar yang disetujui
     DB-->>API: Daftar soal
     API-->>F: Soal tersedia
     F-->>T: Tampilkan pilihan soal
@@ -151,18 +151,18 @@ sequenceDiagram
     API->>DB: Buat dan simpan kode akses
     DB-->>API: Kode akses
     API-->>F: Kode akses
-    F-->>T: Tampilkan kode akses untuk siswa
+    F-->>T: Tampilkan kode akses untuk Pelajar
 ```
 
-## 5. Proses Siswa Mengerjakan Kuis
+## 5. Proses Pelajar Mengerjakan Kuis
 
 ```mermaid
 sequenceDiagram
-    participant S as Siswa
+    participant S as Pelajar
     participant F as Frontend
     participant API as Backend API
     participant DB as Database
-    participant T as Guru
+    participant T as Pengajar
 
     S->>F: Masukkan kode akses kuis
     F->>API: POST /api/students/join-quiz
@@ -173,19 +173,19 @@ sequenceDiagram
 
     S->>F: Jawab soal
     F->>API: POST /api/students/submit-answers
-    API->>DB: Simpan jawaban siswa
+    API->>DB: Simpan jawaban Pelajar
     API->>DB: Hitung skor
     DB-->>API: Hasil dihitung
     API-->>F: Hasil kuis
     F-->>S: Tampilkan hasil kuis
 
-    Note over T,DB: Guru dapat melihat hasil
+    Note over T,DB: Pengajar dapat melihat hasil
     T->>F: Periksa hasil kuis
     F->>API: GET /api/quizzes/:id/results
-    API->>DB: Ambil semua hasil siswa
+    API->>DB: Ambil semua hasil Pelajar
     DB-->>API: Data hasil
     API-->>F: Hasil agregat
-    F-->>T: Tampilkan performa siswa
+    F-->>T: Tampilkan performa Pelajar
 ```
 
 ## 6. Dashboard Admin dan Statistik
@@ -211,10 +211,10 @@ sequenceDiagram
     API-->>F: Data pengguna
     F-->>A: Tampilkan tabel pengguna
 
-    A->>F: Lihat guru menunggu persetujuan
+    A->>F: Lihat Pengajar menunggu persetujuan
     F->>API: GET /api/admin/pending-teachers
-    API->>DB: Ambil guru menunggu
-    DB-->>API: Data guru menunggu
-    API-->>F: Data guru
-    F-->>A: Tampilkan daftar guru menunggu
+    API->>DB: Ambil Pengajar menunggu
+    DB-->>API: Data Pengajar menunggu
+    API-->>F: Data Pengajar
+    F-->>A: Tampilkan daftar Pengajar menunggu
 ```
