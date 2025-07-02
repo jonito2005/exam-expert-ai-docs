@@ -141,39 +141,35 @@ sequenceDiagram
     Frontend-->>Pengajar: Konfirmasi update
 ```
 
-## 6. Sequence Diagram - Persetujuan Soal oleh Admin
+## 6. Sequence Diagram - Persetujuan Soal oleh Pengajar
 
 ```mermaid
 sequenceDiagram
-    participant Admin
+    participant Pengajar
     participant Frontend
     participant Backend
     participant Database
-    participant EmailService
-    participant Pengajar
 
-    Admin->>Frontend: Akses halaman review soal
-    Frontend->>Backend: GET /api/questions/pending-review
-    Backend->>Database: Ambil soal pending review
+    Pengajar->>Frontend: Akses halaman review soal yang digenerate
+    Frontend->>Backend: GET /api/questions (soal pending milik pengajar)
+    Backend->>Database: Ambil soal pending review milik pengajar
     Database-->>Backend: Data soal pending
     Backend-->>Frontend: List soal pending
-    Frontend-->>Admin: Tampilkan soal untuk review
-    Admin->>Frontend: Review soal dan beri keputusan
+    Frontend-->>Pengajar: Tampilkan soal untuk review
+    Pengajar->>Frontend: Review soal dan beri keputusan
     alt Menyetujui soal
         Frontend->>Backend: PUT /api/questions/:id/approve
         Backend->>Database: Update status soal menjadi approved
         Database-->>Backend: Status diupdate
-        Backend->>EmailService: Kirim notifikasi ke Pengajar
-        EmailService->>Pengajar: Email soal disetujui
         Backend-->>Frontend: Soal berhasil disetujui
-    else Menolak soal
-        Frontend->>Backend: PUT /api/questions/:id/reject
-        Backend->>Database: Update status soal menjadi rejected
-        Backend->>EmailService: Kirim notifikasi penolakan
-        EmailService->>Pengajar: Email soal ditolak + alasan
-        Backend-->>Frontend: Soal berhasil ditolak
+        Frontend-->>Pengajar: Konfirmasi soal disetujui
+    else Menolak/Edit soal
+        Frontend->>Backend: PUT /api/questions/:id
+        Backend->>Database: Update soal atau ubah status menjadi rejected
+        Database-->>Backend: Soal diupdate/ditolak
+        Backend-->>Frontend: Soal berhasil diupdate/ditolak
+        Frontend-->>Pengajar: Konfirmasi perubahan
     end
-    Frontend-->>Admin: Tampilkan konfirmasi
 ```
 
 ## 7. Sequence Diagram - Pembuatan Kuis
