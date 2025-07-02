@@ -1,487 +1,317 @@
-# Diagram Sequence - ExamExpert-AI
+# Sequence Diagram Sistem ExamExpert-AI
 
-## Daftar Isi
-1. [Alur Autentikasi Pengguna](#1-alur-autentikasi-pengguna)
-2. [Proses Persetujuan Guru](#2-proses-persetujuan-guru)
-3. [Proses Pembuatan dan Tinjauan Soal](#3-proses-pembuatan-dan-tinjauan-soal)
-4. [Pembuatan dan Pengelolaan Kuis](#4-pembuatan-dan-pengelolaan-kuis)
-5. [Proses Siswa Mengerjakan Kuis](#5-proses-siswa-mengerjakan-kuis)
-6. [Dashboard Admin dan Statistik](#6-dashboard-admin-dan-statistik)
-7. [Sequence Diagram: Proses Registrasi Siswa vs Guru](#7-sequence-diagram-proses-registrasi-siswa-vs-guru)
-8. [Sequence Diagram: Detail Upload Dokumen Guru](#8-sequence-diagram-detail-upload-dokumen-guru)
-9. [Sequence Diagram: Notifikasi dan Status Update](#9-sequence-diagram-notifikasi-dan-status-update)
+## 1. Sequence Diagram - Registrasi Pengguna
+
+```mermaid
+sequenceDiagram
+    participant Pengguna
+    participant Frontend
+    participant Backend
+    participant Database
+    participant EmailService
+
+    Pengguna->>Frontend: Mengisi form registrasi
+    Frontend->>Backend: POST /api/auth/register
+    Backend->>Database: Cek email sudah terdaftar
+    alt Email belum terdaftar
+        Database-->>Backend: Email tersedia
+        Backend->>Database: Simpan data pengguna
+        Database-->>Backend: Data tersimpan
+        Backend->>EmailService: Kirim email verifikasi
+        EmailService-->>Backend: Email terkirim
+        Backend-->>Frontend: Registrasi berhasil
+        Frontend-->>Pengguna: Tampilkan pesan sukses
+    else Email sudah terdaftar
+        Database-->>Backend: Email sudah ada
+        Backend-->>Frontend: Error email sudah terdaftar
+        Frontend-->>Pengguna: Tampilkan pesan error
+    end
+```
+
+## 2. Sequence Diagram - Login Pengguna
+
+```mermaid
+sequenceDiagram
+    participant Pengguna
+    participant Frontend
+    participant Backend
+    participant Database
+    participant AuthMiddleware
+
+    Pengguna->>Frontend: Input email dan password
+    Frontend->>Backend: POST /api/auth/login
+    Backend->>Database: Validasi kredensial
+    alt Kredensial valid
+        Database-->>Backend: Data pengguna valid
+        Backend->>AuthMiddleware: Generate JWT token
+        AuthMiddleware-->>Backend: Token dibuat
+        Backend-->>Frontend: Login berhasil + token
+        Frontend-->>Pengguna: Redirect ke dashboard
+    else Kredensial tidak valid
+        Database-->>Backend: Kredensial salah
+        Backend-->>Frontend: Error login gagal
+        Frontend-->>Pengguna: Tampilkan pesan error
+    end
+```
+
+## 3. Sequence Diagram - Registrasi Pengajar
+
+```mermaid
+sequenceDiagram
+    participant Pengajar
+    participant Frontend
+    participant Backend
+    participant FileStorage
+    participant Database
+    participant EmailService
+    participant Admin
+
+    Pengajar->>Frontend: Mengisi form registrasi Pengajar
+    Pengajar->>Frontend: Upload dokumen verifikasi
+    Frontend->>Backend: POST /api/teachers/register
+    Backend->>FileStorage: Simpan file dokumen
+    FileStorage-->>Backend: File tersimpan
+    Backend->>Database: Simpan data Pengajar (status: pending)
+    Database-->>Backend: Data tersimpan
+    Backend->>EmailService: Kirim notifikasi ke admin
+    EmailService->>Admin: Email notifikasi Pengajar baru
+    Backend-->>Frontend: Registrasi dikirim untuk review
+    Frontend-->>Pengajar: Tampilkan status pending
+```
+
+## 4. Sequence Diagram - Persetujuan Pengajar oleh Admin
+
+```mermaid
+sequenceDiagram
+    participant Admin
+    participant Frontend
+    participant Backend
+    participant Database
+    participant EmailService
+    participant Pengajar
+
+    Admin->>Frontend: Akses halaman pending teachers
+    Frontend->>Backend: GET /api/admin/pending-teachers
+    Backend->>Database: Ambil data Pengajar pending
+    Database-->>Backend: Data Pengajar pending
+    Backend-->>Frontend: List Pengajar pending
+    Frontend-->>Admin: Tampilkan list Pengajar
+    Admin->>Frontend: Pilih Pengajar untuk disetujui/ditolak
+    alt Menyetujui Pengajar
+        Frontend->>Backend: PUT /api/admin/approve-teacher/:id
+        Backend->>Database: Update status Pengajar menjadi active
+        Database-->>Backend: Status diupdate
+        Backend->>EmailService: Kirim email approval
+        EmailService->>Pengajar: Email pemberitahuan disetujui
+        Backend-->>Frontend: Pengajar berhasil disetujui
+        Frontend-->>Admin: Tampilkan konfirmasi
+    else Menolak Pengajar
+        Frontend->>Backend: PUT /api/admin/reject-teacher/:id
+        Backend->>Database: Update status Pengajar menjadi rejected
+        Backend->>EmailService: Kirim email penolakan
+        EmailService->>Pengajar: Email pemberitahuan ditolak
+        Backend-->>Frontend: Pengajar berhasil ditolak
+        Frontend-->>Admin: Tampilkan konfirmasi
+    end
+```
+
+## 5. Sequence Diagram - Generate Soal AI
+
+```mermaid
+sequenceDiagram
+    participant Pengajar
+    participant Frontend
+    participant Backend
+    participant AIService
+    participant Database
+
+    Pengajar->>Frontend: Input parameter soal (topik, tipe, jumlah, tingkat kesulitan)
+    Frontend->>Backend: POST /api/questions/generate
+    Backend->>AIService: Request generate soal
+    AIService-->>Backend: Response soal yang digenerate
+    Backend->>Database: Simpan soal (status: pending_review)
+    Database-->>Backend: Soal tersimpan
+    Backend-->>Frontend: Soal berhasil digenerate
+    Frontend-->>Pengajar: Tampilkan soal untuk review
+    Pengajar->>Frontend: Review dan edit soal jika perlu
+    Frontend->>Backend: PUT /api/questions/:id
+    Backend->>Database: Update soal
+    Database-->>Backend: Soal diupdate
+    Backend-->>Frontend: Soal berhasil diupdate
+    Frontend-->>Pengajar: Konfirmasi update
+```
+
+## 6. Sequence Diagram - Persetujuan Soal oleh Admin
+
+```mermaid
+sequenceDiagram
+    participant Admin
+    participant Frontend
+    participant Backend
+    participant Database
+    participant EmailService
+    participant Pengajar
+
+    Admin->>Frontend: Akses halaman review soal
+    Frontend->>Backend: GET /api/questions/pending-review
+    Backend->>Database: Ambil soal pending review
+    Database-->>Backend: Data soal pending
+    Backend-->>Frontend: List soal pending
+    Frontend-->>Admin: Tampilkan soal untuk review
+    Admin->>Frontend: Review soal dan beri keputusan
+    alt Menyetujui soal
+        Frontend->>Backend: PUT /api/questions/:id/approve
+        Backend->>Database: Update status soal menjadi approved
+        Database-->>Backend: Status diupdate
+        Backend->>EmailService: Kirim notifikasi ke Pengajar
+        EmailService->>Pengajar: Email soal disetujui
+        Backend-->>Frontend: Soal berhasil disetujui
+    else Menolak soal
+        Frontend->>Backend: PUT /api/questions/:id/reject
+        Backend->>Database: Update status soal menjadi rejected
+        Backend->>EmailService: Kirim notifikasi penolakan
+        EmailService->>Pengajar: Email soal ditolak + alasan
+        Backend-->>Frontend: Soal berhasil ditolak
+    end
+    Frontend-->>Admin: Tampilkan konfirmasi
+```
+
+## 7. Sequence Diagram - Pembuatan Kuis
+
+```mermaid
+sequenceDiagram
+    participant Pengajar
+    participant Frontend
+    participant Backend
+    participant Database
+
+    Pengajar->>Frontend: Akses halaman buat kuis
+    Frontend->>Backend: GET /api/questions (soal approved)
+    Backend->>Database: Ambil soal yang disetujui
+    Database-->>Backend: Data soal approved
+    Backend-->>Frontend: List soal tersedia
+    Frontend-->>Pengajar: Tampilkan soal untuk dipilih
+    Pengajar->>Frontend: Pilih soal dan isi detail kuis
+    Frontend->>Backend: POST /api/quizzes
+    Backend->>Database: Simpan data kuis
+    Database-->>Backend: Kuis tersimpan
+    Backend->>Backend: Generate kode akses kuis
+    Backend->>Database: Simpan kode akses
+    Database-->>Backend: Kode akses tersimpan
+    Backend-->>Frontend: Kuis berhasil dibuat + kode akses
+    Frontend-->>Pengajar: Tampilkan kuis dan kode akses
+```
+
+## 8. Sequence Diagram - Pelajar Mengikuti Kuis
+
+```mermaid
+sequenceDiagram
+    participant Pelajar
+    participant Frontend
+    participant Backend
+    participant Database
+
+    Pelajar->>Frontend: Input kode akses kuis
+    Frontend->>Backend: POST /api/students/join-quiz
+    Backend->>Database: Validasi kode akses dan waktu kuis
+    alt Kode valid dan kuis aktif
+        Database-->>Backend: Kuis tersedia
+        Backend->>Database: Catat partisipasi Pelajar
+        Database-->>Backend: Partisipasi tercatat
+        Backend-->>Frontend: Join berhasil + data kuis
+        Frontend-->>Pelajar: Tampilkan kuis
+        loop Untuk setiap soal
+            Pelajar->>Frontend: Pilih jawaban
+            Frontend->>Frontend: Simpan jawaban sementara
+        end
+        Pelajar->>Frontend: Submit kuis
+        Frontend->>Backend: POST /api/students/submit-answers
+        Backend->>Database: Simpan jawaban dan hitung skor
+        Database-->>Backend: Jawaban tersimpan + skor
+        Backend-->>Frontend: Hasil kuis
+        Frontend-->>Pelajar: Tampilkan hasil
+    else Kode tidak valid atau kuis tidak aktif
+        Database-->>Backend: Kuis tidak ditemukan/expired
+        Backend-->>Frontend: Error kode tidak valid
+        Frontend-->>Pelajar: Tampilkan pesan error
+    end
+```
+
+## 9. Sequence Diagram - Melihat Hasil Kuis (Pengajar)
+
+```mermaid
+sequenceDiagram
+    participant Pengajar
+    participant Frontend
+    participant Backend
+    participant Database
+
+    Pengajar->>Frontend: Akses halaman hasil kuis
+    Frontend->>Backend: GET /api/quizzes (kuis milik Pengajar)
+    Backend->>Database: Ambil kuis milik Pengajar
+    Database-->>Backend: Data kuis Pengajar
+    Backend-->>Frontend: List kuis
+    Frontend-->>Pengajar: Tampilkan kuis
+    Pengajar->>Frontend: Pilih kuis untuk melihat hasil
+    Frontend->>Backend: GET /api/quizzes/:id/results
+    Backend->>Database: Ambil hasil detail kuis
+    Database-->>Backend: Data hasil lengkap
+    Backend-->>Frontend: Hasil kuis detail
+    Frontend-->>Pengajar: Tampilkan hasil (skor, partisipan, statistik)
+    opt Export hasil
+        Pengajar->>Frontend: Klik export hasil
+        Frontend->>Backend: GET /api/quizzes/:id/export?format=csv
+        Backend->>Database: Ambil data untuk export
+        Database-->>Backend: Data export
+        Backend-->>Frontend: File CSV
+        Frontend-->>Pengajar: Download file hasil
+    end
+```
+
+## 10. Sequence Diagram - Dashboard Admin & Statistik
+
+```mermaid
+sequenceDiagram
+    participant Admin
+    participant Frontend
+    participant Backend
+    participant Database
+
+    Admin->>Frontend: Akses dashboard admin
+    Frontend->>Backend: GET /api/admin/statistics
+    Backend->>Database: Hitung statistik pengguna
+    Database-->>Backend: Data jumlah pengguna per role
+    Backend->>Database: Hitung statistik kuis
+    Database-->>Backend: Data jumlah kuis aktif/selesai
+    Backend->>Database: Hitung statistik soal
+    Database-->>Backend: Data soal pending/approved/rejected
+    Backend-->>Frontend: Data statistik lengkap
+    Frontend-->>Admin: Tampilkan dashboard dengan grafik
+    
+    opt Melihat detail pengguna
+        Admin->>Frontend: Klik menu kelola pengguna
+        Frontend->>Backend: GET /api/admin/users?page=1&limit=10
+        Backend->>Database: Ambil data pengguna dengan paginasi
+        Database-->>Backend: Data pengguna
+        Backend-->>Frontend: List pengguna
+        Frontend-->>Admin: Tampilkan tabel pengguna
+    end
+    
+    opt Melihat statistik soal
+        Admin->>Frontend: Klik menu statistik soal
+        Frontend->>Backend: GET /api/admin/question-statistics
+        Backend->>Database: Ambil statistik soal per kategori
+        Database-->>Backend: Data statistik soal
+        Backend-->>Frontend: Statistik soal detail
+        Frontend-->>Admin: Tampilkan grafik statistik soal
+    end
+```
 
 ---
 
-## 1. Alur Autentikasi Pengguna
-
-```mermaid
-sequenceDiagram
-    participant U as Pengguna
-    participant F as Frontend
-    participant API as Backend API
-    participant DB as Database
-    participant Email as Layanan Email
-
-    U->>F: Masukkan detail pendaftaran
-    F->>API: POST /api/auth/register
-    API->>DB: Buat record pengguna
-    DB-->>API: Pengguna dibuat
-    
-    alt Pendaftaran Guru
-        API->>Email: Kirim email verifikasi
-        Email-->>U: Email verifikasi
-        API-->>F: Pendaftaran menunggu persetujuan
-    else Pendaftaran Siswa
-        API-->>F: Pendaftaran berhasil
-    end
-    
-    F-->>U: Tampilkan status pendaftaran
-
-    Note over U,Email: Proses Login
-    U->>F: Masukkan kredensial login
-    F->>API: POST /api/auth/login
-    API->>DB: Validasi kredensial
-    DB-->>API: Data pengguna
-    API-->>F: JWT Token + Info pengguna
-    F-->>U: Login berhasil
-```
-
-## 2. Proses Persetujuan Guru
-
-```mermaid
-sequenceDiagram
-    participant T as Guru
-    participant F as Frontend
-    participant API as Backend API
-    participant DB as Database
-    participant A as Admin
-    participant Email as Layanan Email
-
-    T->>F: Daftar sebagai guru dengan dokumen
-    F->>API: POST /api/teachers/register (multipart/form-data)
-    API->>DB: Simpan data guru + dokumen
-    DB-->>API: Record guru dibuat (menunggu)
-    API->>Email: Beritahu admin pendaftaran baru
-    API-->>F: Pendaftaran dikirim
-    F-->>T: Pesan menunggu persetujuan
-
-    Note over A,Email: Proses Tinjauan Admin
-    A->>F: Akses dashboard admin
-    F->>API: GET /api/admin/pending-teachers
-    API->>DB: Ambil guru yang menunggu
-    DB-->>API: Daftar guru menunggu
-    API-->>F: Data guru
-    F-->>A: Tampilkan guru menunggu
-
-    A->>F: Tinjau detail guru
-    F->>API: GET /api/teachers/:id
-    API->>DB: Ambil detail guru
-    DB-->>API: Detail guru + dokumen
-    API-->>F: Data guru
-    F-->>A: Tampilkan profil guru
-
-    alt Setujui Guru
-        A->>F: Setujui guru
-        F->>API: PUT /api/admin/approve-teacher/:id
-        API->>DB: Perbarui status guru menjadi 'aktif'
-        API->>Email: Kirim notifikasi persetujuan
-        Email-->>T: Email persetujuan
-    else Tolak Guru
-        A->>F: Tolak dengan alasan
-        F->>API: PUT /api/admin/reject-teacher/:id
-        API->>DB: Perbarui status guru menjadi 'ditolak'
-        API->>Email: Kirim notifikasi penolakan
-        Email-->>T: Email penolakan dengan alasan
-    end
-```
-
-## 3. Proses Pembuatan dan Tinjauan Soal
-
-```mermaid
-sequenceDiagram
-    participant T as Guru
-    participant F as Frontend
-    participant API as Backend API
-    participant AI as Layanan AI (Perplexity)
-    participant DB as Database
-
-    T->>F: Minta pembuatan soal AI
-    F->>API: POST /api/questions/generate
-    API->>AI: Buat soal dengan topik/kesulitan
-    AI-->>API: Soal yang dibuat AI
-    API->>DB: Simpan soal (status: draft)
-    DB-->>API: Soal disimpan
-    API-->>F: Soal yang dibuat AI
-    F-->>T: Tampilkan soal untuk ditinjau
-
-    Note over T,F: Guru meninjau soal buatannya sendiri
-    T->>F: Tinjau kualitas soal AI
-    T->>F: Edit soal jika diperlukan
-    
-    alt Setujui Soal
-        T->>F: Setujui soal
-        F->>API: PUT /api/questions/:id/approve
-        API->>DB: Perbarui status soal menjadi 'disetujui'
-        DB-->>API: Soal disetujui
-        API-->>F: Respons berhasil
-        F-->>T: Soal tersedia untuk kuis
-    else Tolak Soal
-        T->>F: Tolak soal
-        F->>API: PUT /api/questions/:id/reject
-        API->>DB: Hapus atau tandai soal ditolak
-        DB-->>API: Soal ditolak
-        API-->>F: Respons berhasil
-        F-->>T: Soal tidak tersedia, perlu generate ulang
-    end
-```
-
-## 4. Pembuatan dan Pengelolaan Kuis
-
-```mermaid
-sequenceDiagram
-    participant T as Guru
-    participant F as Frontend
-    participant API as Backend API
-    participant DB as Database
-
-    T->>F: Buat kuis baru
-    F->>API: GET /api/questions (soal yang disetujui)
-    API->>DB: Ambil soal guru yang disetujui
-    DB-->>API: Daftar soal
-    API-->>F: Soal tersedia
-    F-->>T: Tampilkan pilihan soal
-
-    T->>F: Konfigurasi detail kuis
-    F->>API: POST /api/quizzes
-    API->>DB: Buat record kuis
-    DB-->>API: Kuis dibuat
-    API-->>F: Data kuis dengan ID
-    F-->>T: Kuis berhasil dibuat
-
-    T->>F: Buat kode akses
-    F->>API: POST /api/quizzes/:id/generate-code
-    API->>DB: Buat dan simpan kode akses
-    DB-->>API: Kode akses
-    API-->>F: Kode akses
-    F-->>T: Tampilkan kode akses untuk siswa
-```
-
-## 5. Proses Siswa Mengerjakan Kuis
-
-```mermaid
-sequenceDiagram
-    participant S as Siswa
-    participant F as Frontend
-    participant API as Backend API
-    participant DB as Database
-    participant T as Guru
-
-    S->>F: Masukkan kode akses kuis
-    F->>API: POST /api/students/join-quiz
-    API->>DB: Validasi kode akses & ketersediaan kuis
-    DB-->>API: Detail kuis
-    API-->>F: Data kuis (tanpa jawaban)
-    F-->>S: Tampilkan soal kuis
-
-    S->>F: Jawab soal
-    F->>API: POST /api/students/submit-answers
-    API->>DB: Simpan jawaban siswa
-    API->>DB: Hitung skor
-    DB-->>API: Hasil dihitung
-    API-->>F: Hasil kuis
-    F-->>S: Tampilkan hasil kuis
-
-    Note over T,DB: Guru dapat melihat hasil
-    T->>F: Periksa hasil kuis
-    F->>API: GET /api/quizzes/:id/results
-    API->>DB: Ambil semua hasil siswa
-    DB-->>API: Data hasil
-    API-->>F: Hasil agregat
-    F-->>T: Tampilkan performa siswa
-```
-
-## 6. Dashboard Admin dan Statistik
-
-```mermaid
-sequenceDiagram
-    participant A as Admin
-    participant F as Frontend
-    participant API as Backend API
-    participant DB as Database
-
-    A->>F: Akses dashboard admin
-    F->>API: GET /api/admin/statistics
-    API->>DB: Agregat statistik sistem
-    DB-->>API: Data statistik
-    API-->>F: Metrik sistem
-    F-->>A: Tampilkan dashboard
-
-    A->>F: Lihat pengelolaan pengguna
-    F->>API: GET /api/admin/users
-    API->>DB: Ambil pengguna dengan filter
-    DB-->>API: Daftar pengguna
-    API-->>F: Data pengguna
-    F-->>A: Tampilkan tabel pengguna
-
-    A->>F: Lihat guru menunggu persetujuan
-    F->>API: GET /api/admin/pending-teachers
-    API->>DB: Ambil guru menunggu
-    DB-->>API: Data guru menunggu
-    API-->>F: Data guru
-    F-->>A: Tampilkan daftar guru menunggu
-```
-
-## 7. Sequence Diagram: Proses Registrasi Siswa vs Guru
-
-```mermaid
-sequenceDiagram
-    participant S as 👨‍🎓 Siswa
-    participant T as 👨‍🏫 Guru
-    participant F as Frontend
-    participant API as Backend API
-    participant DB as Database
-    participant FS as File Storage
-    participant A as 👨‍💼 Admin
-    participant Email as 📧 Email Service
-
-    Note over S,Email: 🎓 ALUR REGISTRASI SISWA (SEDERHANA)
-    
-    S->>F: Klik "Daftar sebagai Siswa"
-    F->>S: Tampilkan form sederhana
-    S->>F: Isi data: nama, email, password
-    F->>F: Validasi client-side
-    F->>API: POST /api/auth/register/student
-    
-    API->>API: Validasi server-side
-    API->>DB: INSERT user (role: student, status: active)
-    DB-->>API: User created successfully
-    
-    API->>Email: Kirim email selamat datang
-    Email-->>S: Email: "Selamat datang di ExamExpert-AI"
-    
-    API-->>F: Response: {success: true, user: {...}}
-    F->>F: Auto-login dengan token
-    F-->>S: Redirect ke dashboard siswa
-    
-    Note over S: ✅ Siswa langsung dapat mengikuti kuis
-
-    Note over T,Email: 👨‍🏫 ALUR REGISTRASI GURU (KOMPLEKS)
-    
-    T->>F: Klik "Daftar sebagai Guru"
-    F->>T: Tampilkan form lengkap + upload
-    T->>F: Isi data pribadi
-    T->>F: Isi data institusi
-    T->>F: Upload ijazah S1/S2
-    F->>FS: Upload file 1
-    FS-->>F: File URL 1
-    T->>F: Upload sertifikat pendidik
-    F->>FS: Upload file 2
-    FS-->>F: File URL 2
-    T->>F: Upload surat rekomendasi
-    F->>FS: Upload file 3
-    FS-->>F: File URL 3
-    T->>F: Upload KTP/identitas
-    F->>FS: Upload file 4
-    FS-->>F: File URL 4
-    
-    F->>F: Validasi kelengkapan dokumen
-    F->>API: POST /api/auth/register/teacher (multipart)
-    
-    API->>API: Validasi semua data & file
-    API->>DB: INSERT user (role: teacher, status: pending)
-    API->>DB: INSERT documents dengan file URLs
-    DB-->>API: Teacher registration saved
-    
-    API->>Email: Kirim notifikasi ke admin
-    Email-->>A: Email: "Pendaftaran guru baru menunggu review"
-    
-    API->>Email: Kirim konfirmasi ke guru
-    Email-->>T: Email: "Pendaftaran diterima, menunggu review"
-    
-    API-->>F: Response: {success: true, status: "pending"}
-    F-->>T: Tampilkan "Menunggu review admin"
-    
-    Note over T: ⏳ Guru menunggu approval admin
-
-    Note over A,Email: 👨‍💼 PROSES REVIEW ADMIN
-    
-    A->>F: Login ke admin dashboard
-    F->>API: GET /api/admin/pending-teachers
-    API->>DB: SELECT teachers WHERE status = 'pending'
-    DB-->>API: List pending teachers
-    API-->>F: Teachers data
-    F-->>A: Tampilkan daftar guru menunggu
-    
-    A->>F: Klik review guru tertentu
-    F->>API: GET /api/admin/teacher/:id/details
-    API->>DB: SELECT teacher + documents
-    DB-->>API: Teacher details + file URLs
-    API-->>F: Full teacher data
-    F-->>A: Tampilkan detail + dokumen
-    
-    A->>F: Download/preview dokumen
-    F->>FS: GET document files
-    FS-->>A: Document files
-    
-    alt Admin Menyetujui
-        A->>F: Klik "Setujui"
-        F->>API: PUT /api/admin/approve-teacher/:id
-        API->>DB: UPDATE teacher status = 'approved'
-        DB-->>API: Status updated
-        API->>Email: Kirim email persetujuan
-        Email-->>T: Email: "Akun guru disetujui!"
-        API-->>F: Success response
-        F-->>A: Tampilkan "Guru disetujui"
-        
-        Note over T: ✅ Guru dapat akses fitur lengkap
-        
-    else Admin Menolak
-        A->>F: Klik "Tolak" + isi alasan
-        F->>API: PUT /api/admin/reject-teacher/:id
-        API->>DB: UPDATE teacher status = 'rejected'
-        DB-->>API: Status updated
-        API->>Email: Kirim email penolakan + alasan
-        Email-->>T: Email: "Pendaftaran ditolak: [alasan]"
-        API-->>F: Success response
-        F-->>A: Tampilkan "Guru ditolak"
-        
-        Note over T: ❌ Guru dapat mendaftar ulang
-    end
-```
-
-## 8. Sequence Diagram: Detail Upload Dokumen Guru
-
-```mermaid
-sequenceDiagram
-    participant T as 👨‍🏫 Guru
-    participant F as Frontend
-    participant API as Backend API
-    participant FS as File Storage
-    participant DB as Database
-
-    Note over T,DB: 📄 PROSES UPLOAD DOKUMEN STEP-BY-STEP
-
-    T->>F: Pilih file ijazah
-    F->>F: Validasi file (format, size)
-    
-    alt File Valid
-        F->>API: POST /api/upload/document
-        Note right of API: Headers: Content-Type: multipart/form-data
-        API->>API: Validasi file server-side
-        API->>FS: Simpan file dengan nama unik
-        FS-->>API: File path + URL
-        API->>DB: INSERT temporary_uploads
-        DB-->>API: Upload record created
-        API-->>F: {fileId, url, status: "uploaded"}
-        F->>F: Tampilkan preview + checkmark
-        F-->>T: "✅ Ijazah berhasil diupload"
-    else File Invalid
-        F-->>T: "❌ Error: [format/size tidak valid]"
-    end
-
-    T->>F: Pilih file sertifikat
-    F->>F: Validasi file
-    F->>API: POST /api/upload/document
-    API->>FS: Simpan file
-    FS-->>API: File URL
-    API->>DB: INSERT temporary_uploads
-    API-->>F: Upload success
-    F-->>T: "✅ Sertifikat berhasil diupload"
-
-    T->>F: Pilih file rekomendasi
-    F->>F: Validasi file
-    F->>API: POST /api/upload/document
-    API->>FS: Simpan file
-    API->>DB: INSERT temporary_uploads
-    API-->>F: Upload success
-    F-->>T: "✅ Rekomendasi berhasil diupload"
-
-    T->>F: Pilih file KTP
-    F->>F: Validasi file
-    F->>API: POST /api/upload/document
-    API->>FS: Simpan file
-    API->>DB: INSERT temporary_uploads
-    API-->>F: Upload success
-    F-->>T: "✅ KTP berhasil diupload"
-
-    Note over T,DB: 📋 FINALISASI REGISTRASI
-
-    F->>F: Cek kelengkapan (4 dokumen)
-    F->>F: Enable tombol "Submit Registrasi"
-    T->>F: Klik "Submit Registrasi"
-    
-    F->>API: POST /api/auth/register/teacher/finalize
-    Note right of API: Body: {personalData, institutionData, documentIds: [...]}
-    
-    API->>DB: BEGIN TRANSACTION
-    API->>DB: INSERT users (teacher)
-    API->>DB: INSERT teacher_profiles
-    API->>DB: UPDATE temporary_uploads → permanent
-    API->>DB: INSERT teacher_documents
-    API->>DB: COMMIT TRANSACTION
-    
-    DB-->>API: Registration complete
-    API-->>F: {success: true, status: "pending_review"}
-    F-->>T: "Registrasi berhasil! Menunggu review admin."
-
-    Note over T: ⏳ Status: Menunggu review (1-3 hari kerja)
-```
-
-## 9. Sequence Diagram: Notifikasi dan Status Update
-
-```mermaid
-sequenceDiagram
-    participant T as 👨‍🏫 Guru
-    participant F as Frontend
-    participant API as Backend API
-    participant DB as Database
-    participant Email as 📧 Email Service
-    participant A as 👨‍💼 Admin
-
-    Note over T,A: 📧 SISTEM NOTIFIKASI REGISTRASI
-
-    Note over T,Email: Setelah Submit Registrasi Guru
-    API->>Email: Trigger email ke admin
-    Email->>Email: Generate email template
-    Email-->>A: "📩 Pendaftaran guru baru: [Nama Guru]"
-    
-    API->>Email: Trigger email ke guru
-    Email->>Email: Generate konfirmasi template
-    Email-->>T: "📩 Registrasi diterima, menunggu review"
-
-    Note over T,A: Guru Cek Status Berkala
-    T->>F: Login & cek status
-    F->>API: GET /api/auth/me
-    API->>DB: SELECT user status
-    DB-->>API: User data dengan status
-    API-->>F: {status: "pending_review"}
-    F-->>T: Tampilkan "Status: Menunggu Review"
-
-    Note over A,Email: Admin Proses Review
-    A->>F: Buka admin dashboard
-    A->>F: Lihat notifikasi badge "3 guru menunggu"
-    A->>F: Klik review guru
-    
-    alt Admin Approve
-        A->>API: PUT /api/admin/approve-teacher/:id
-        API->>DB: UPDATE status = 'approved'
-        API->>Email: Trigger approval email
-        Email-->>T: "🎉 Akun disetujui! Silakan login"
-        
-        Note over T: Real-time Status Update
-        T->>F: Cek status (atau auto-refresh)
-        F->>API: GET /api/auth/me
-        API-->>F: {status: "approved"}
-        F-->>T: "✅ Akun Aktif! Akses fitur guru tersedia"
-        
-    else Admin Reject
-        A->>API: PUT /api/admin/reject-teacher/:id
-        Note right of API: Body: {reason: "Dokumen tidak lengkap"}
-        API->>DB: UPDATE status = 'rejected'
-        API->>Email: Trigger rejection email
-        Email-->>T: "❌ Pendaftaran ditolak: [Alasan]"
-        
-        T->>F: Cek status
-        F->>API: GET /api/auth/me
-        API-->>F: {status: "rejected", reason: "..."}
+**Keterangan Diagram:**
+- Setiap sequence diagram menggambarkan interaksi antar komponen sistem
+- Diagram menggunakan notasi standar UML sequence diagram
+- Semua diagram dalam bahasa Indonesia sesuai permintaan
+- Diagram mencakup flow utama dan alternatif flow (error handling)
+- Menunjukkan komunikasi antara Frontend, Backend, Database, dan service eksternal
